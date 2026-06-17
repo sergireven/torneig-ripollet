@@ -66,7 +66,13 @@ function buildSidebar() {
       ]
     },
     { type: 'separator' },
-    { type: 'direct', label: 'Instagram', icon: '📸', id: 'sec-campus' },
+    {
+      type: 'group', label: 'Instagram', icon: '📸', id: 'sec-campus',
+      children: [
+        { label: '@ch_ripollet', id: 'sec-campus', anchor: 'ig-chr' },
+        { label: 'OK Campus Sergi Miras', id: 'sec-campus', anchor: 'ig-campus' },
+      ]
+    },
     { type: 'direct', label: 'Resultats Temporada', icon: '📊', id: 'sec-temporada' },
   ];
 
@@ -553,7 +559,7 @@ function buildInstagramSection() {
     </div>
 
     <!-- Club CHR -->
-    <div class="instagram-section" style="margin-bottom:1.5rem">
+    <div class="instagram-section" id="ig-chr" style="margin-bottom:1.5rem">
       <div class="instagram-header">
         <span class="instagram-icon">📸</span>
         <div class="instagram-header-text">
@@ -579,7 +585,7 @@ function buildInstagramSection() {
     </div>
 
     <!-- OK Campus Sergi Miras -->
-    <div class="instagram-section">
+    <div class="instagram-section" id="ig-campus">
       <div class="instagram-header">
         <span class="instagram-icon">📸</span>
         <div class="instagram-header-text">
