@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background diamond -->
+  <defs>
+    <linearGradient id="chrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066cc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004399;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Shield shape -->
+  <path d="M 50 5 L 80 30 L 80 60 Q 80 85 50 95 Q 20 85 20 60 L 20 30 Z" fill="url(#chrGrad)" stroke="#fff" stroke-width="1"/>
+
+  <!-- CHR text -->
+  <text x="50" y="55" font-size="24" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">CHR</text>
+
+  <!-- Catalan flag stripes at bottom -->
+  <rect x="20" y="75" width="60" height="8" fill="#FFC400"/>
+  <rect x="20" y="83" width="60" height="8" fill="#C60C30"/>
+</svg>

@@ -1,0 +1,204 @@
+{
+  "tournament": {
+    "name": "1r Torneig Base d'Estiu CH Ripollet",
+    "date": "2026-06-21",
+    "location": "Pavelló Municipal d'Esports Joan Creus, Rambla dels Pinetons s/n, Ripollet",
+    "updatedAt": "2026-06-17T00:00:00Z"
+  },
+  "categories": [
+    {
+      "id": "prebenjami",
+      "name": "Prebenjamí",
+      "startTime": "09:30",
+      "awardTime": "13:00",
+      "divisions": [
+        {
+          "id": "prebe-iniciacio",
+          "name": "Iniciació",
+          "matches": [
+            {
+              "id": "prebe-iniciacio-1",
+              "time": "09:30",
+              "home": "CHR D",
+              "away": "PHC Sant Cugat G",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/phc-sant-cugat.svg"
+            },
+            {
+              "id": "prebe-iniciacio-2",
+              "time": "10:50",
+              "home": "PHC Sant Cugat G",
+              "away": "HC Sentmenat",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/phc-sant-cugat.svg",
+              "awayShield": "assets/escudos/hc-sentmenat.svg"
+            },
+            {
+              "id": "prebe-iniciacio-3",
+              "time": "12:10",
+              "home": "CHR D",
+              "away": "HC Sentmenat",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/hc-sentmenat.svg"
+            }
+          ]
+        },
+        {
+          "id": "prebe-plata",
+          "name": "Plata",
+          "matches": [
+            {
+              "id": "prebe-plata-1",
+              "time": "10:10",
+              "home": "CHR B",
+              "away": "CHR C",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/chr.svg"
+            }
+          ]
+        },
+        {
+          "id": "prebe-or",
+          "name": "Or",
+          "matches": [
+            {
+              "id": "prebe-or-1",
+              "time": "11:30",
+              "home": "CHR A",
+              "away": "CH Sta Perpètua A",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/ch-sta-perpetua.svg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "benjami",
+      "name": "Benjamí",
+      "startTime": "15:30",
+      "awardTime": "19:30",
+      "divisions": [
+        {
+          "id": "benjami-plata",
+          "name": "Plata",
+          "matches": [
+            {
+              "id": "benjami-plata-1",
+              "time": "15:30",
+              "home": "CHR B",
+              "away": "HC Sentmenat",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/hc-sentmenat.svg"
+            },
+            {
+              "id": "benjami-plata-2",
+              "time": "16:50",
+              "home": "HC Sentmenat",
+              "away": "CH Sta Perpètua A",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/hc-sentmenat.svg",
+              "awayShield": "assets/escudos/ch-sta-perpetua.svg"
+            },
+            {
+              "id": "benjami-plata-3",
+              "time": "18:10",
+              "home": "CHR B",
+              "away": "CH Sta Perpètua A",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/ch-sta-perpetua.svg"
+            }
+          ]
+        },
+        {
+          "id": "benjami-or",
+          "name": "Or",
+          "matches": [
+            {
+              "id": "benjami-or-1",
+              "time": "16:10",
+              "home": "CHR A",
+              "away": "PHC Sant Cugat B",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/phc-sant-cugat.svg"
+            },
+            {
+              "id": "benjami-or-2",
+              "time": "17:30",
+              "home": "HC Sant Just B",
+              "away": "PHC Sant Cugat B",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/hc-sant-just.svg",
+              "awayShield": "assets/escudos/phc-sant-cugat.svg"
+            },
+            {
+              "id": "benjami-or-3",
+              "time": "18:50",
+              "home": "CHR A",
+              "away": "HC Sant Just B",
+              "homeScore": 0,
+              "awayScore": 0,
+              "played": false,
+              "homeShield": "assets/escudos/chr.svg",
+              "awayShield": "assets/escudos/hc-sant-just.svg"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sponsors": [
+    {"name": "Anodime", "logo": "assets/sponsors/anodime.svg"},
+    {"name": "Antoni Canals", "logo": "assets/sponsors/antoni-canals.svg"},
+    {"name": "Boix", "logo": "assets/sponsors/boix.svg"},
+    {"name": "Canals Boix Carreter Felip", "logo": "assets/sponsors/canals-boix.svg"},
+    {"name": "Ecoparc", "logo": "assets/sponsors/ecoparc.svg"},
+    {"name": "Electrorambla", "logo": "assets/sponsors/electrorambla.svg"},
+    {"name": "Emexact", "logo": "assets/sponsors/emexact.svg"},
+    {"name": "English Torras", "logo": "assets/sponsors/english-torras.svg"},
+    {"name": "Figueras", "logo": "assets/sponsors/figueras.svg"},
+    {"name": "Gustems", "logo": "assets/sponsors/gustems.svg"},
+    {"name": "Kids & Us", "logo": "assets/sponsors/kids-us.svg"},
+    {"name": "McDonald's", "logo": "assets/sponsors/mcdonalds.svg"},
+    {"name": "Maverich", "logo": "assets/sponsors/maverich.svg"},
+    {"name": "Mayo", "logo": "assets/sponsors/mayo.svg"},
+    {"name": "Rastro Reto", "logo": "assets/sponsors/rastro-reto.svg"},
+    {"name": "Repsol", "logo": "assets/sponsors/repsol.svg"},
+    {"name": "Ripollet Serveis Immobiliaris", "logo": "assets/sponsors/ripollet-serveis.svg"},
+    {"name": "Servigrup", "logo": "assets/sponsors/servigrup.svg"},
+    {"name": "Tatchepol", "logo": "assets/sponsors/tatchepol.svg"},
+    {"name": "Vallès Dental", "logo": "assets/sponsors/valles-dental.svg"}
+  ],
+  "links": {
+    "clubWeb": "https://www.clubhoqueiripollet.com/",
+    "instagramCampus": "https://www.instagram.com/sergimiras_campus/",
+    "okCat360": "https://okcat360.vercel.app/"
+  }
+}

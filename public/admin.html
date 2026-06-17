@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Torneig CH Ripollet</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-box">
+      <h1>🔐 Admin Panel</h1>
+      <p>Introdueix la contrasenya per accedir</p>
+      <form id="login-form" class="login-form">
+        <input type="password" id="password-input" placeholder="Contrasenya" required>
+        <button type="submit" class="btn-primary">Accedir</button>
+      </form>
+      <p id="login-error" class="error-message"></p>
+      <a href="index.html" class="back-link">← Tornar a resultats</a>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel" class="admin-panel" style="display: none;">
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <h1>🔧 Panell d'Administrador</h1>
+        <button id="logout-btn" class="btn-secondary">Tancar sessió</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Update View Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="form">📝 Formulari</button>
+        <button class="admin-tab-btn" data-tab="visual">🎮 Scoreboard Visual</button>
+      </div>
+
+      <!-- FORM VIEW -->
+      <div id="form-view" class="admin-tab-content active">
+        <section class="admin-section">
+          <h2>Actualitzar Resultat</h2>
+          <form id="update-form" class="admin-form">
+            <div class="form-group">
+              <label>Categoria:</label>
+              <select id="form-category" required>
+                <option value="">Selecciona categoria...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Divisió:</label>
+              <select id="form-division" required>
+                <option value="">Selecciona divisió...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Partit:</label>
+              <select id="form-match" required>
+                <option value="">Selecciona partit...</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Gols Local:</label>
+                <input type="number" id="form-home-score" min="0" required>
+              </div>
+              <div class="form-group">
+                <label>Gols Visitant:</label>
+                <input type="number" id="form-away-score" min="0" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="form-played" checked>
+                Partit jugat
+              </label>
+            </div>
+
+            <button type="submit" class="btn-primary btn-large">Guardar Resultat</button>
+          </form>
+          <p id="form-message" class="message"></p>
+        </section>
+      </div>
+
+      <!-- VISUAL SCOREBOARD VIEW -->
+      <div id="visual-view" class="admin-tab-content">
+        <section class="admin-section">
+          <h2>Scoreboard Visual</h2>
+
+          <div class="scoreboard-selector">
+            <div class="form-group">
+              <label>Categoria:</label>
+              <select id="visual-category">
+                <option value="">Selecciona categoria...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Divisió:</label>
+              <select id="visual-division">
+                <option value="">Selecciona divisió...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Partit:</label>
+              <select id="visual-match">
+                <option value="">Selecciona partit...</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="scoreboard" class="scoreboard">
+            <p>Selecciona un partit per editar</p>
+          </div>
+          <p id="visual-message" class="message"></p>
+        </section>
+      </div>
+    </main>
+
+    <!-- Match List -->
+    <section class="admin-section matches-list-section">
+      <h2>Partits Actuals</h2>
+      <div id="matches-list" class="admin-matches-list">
+        <!-- Matches will be loaded here -->
+      </div>
+    </section>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

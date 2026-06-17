@@ -1,0 +1,12 @@
+{
+  "name": "torneig-ripollet",
+  "version": "1.0.0",
+  "description": "1r Torneig Base d'Estiu CH Ripollet - Live Results & Admin Panel",
+  "scripts": {
+    "dev": "npx serve public -p 3000",
+    "test": "node test.js"
+  },
+  "keywords": ["hoquei", "torneig", "ripollet"],
+  "author": "Sergi Reventos",
+  "license": "MIT"
+}
