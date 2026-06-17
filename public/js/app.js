@@ -8,6 +8,7 @@ async function init() {
   await loadData();
   buildSidebar();
   buildContent();
+  buildBottomNav();
   setupMobileMenu();
   setupScrollSpy();
   setInterval(refreshData, 30000);
@@ -74,6 +75,8 @@ function buildSidebar() {
       ]
     },
     { type: 'direct', label: 'Resultats Temporada', icon: '📊', id: 'sec-temporada' },
+    { type: 'separator' },
+    { type: 'link', label: 'Administrador', icon: '🔧', href: 'admin.html' },
   ];
 
   nav.innerHTML = items.map(renderNavItem).join('');
@@ -106,6 +109,128 @@ function buildSidebar() {
   });
 }
 
+/* ===================== BOTTOM NAV (MOBILE) ===================== */
+function buildBottomNav() {
+  const nav = document.getElementById('bottom-nav');
+  const sheet = document.getElementById('bottom-sheet');
+  const sheetItems = document.getElementById('bottom-sheet-items');
+  const overlay = document.getElementById('bottom-sheet-overlay');
+  if (!nav || !sheet) return;
+
+  const tabs = [
+    {
+      icon: '📋', label: 'Info', id: 'sec-info',
+      children: [
+        { icon: '👋', label: 'Benvinguda',       id: 'sec-info', anchor: 'info-welcome' },
+        { icon: '📜', label: 'Regles',            id: 'sec-info', anchor: 'info-rules' },
+        { icon: '🕐', label: 'Horaris',           id: 'sec-info', anchor: 'info-schedule' },
+        { icon: '📍', label: 'Ubicació',          id: 'sec-info', anchor: 'info-location' },
+      ]
+    },
+    {
+      icon: '⭐', label: 'Prebenjamí', id: 'sec-prebenjami',
+      children: [
+        { icon: '🥇', label: 'Or',         id: 'sec-prebe-or' },
+        { icon: '🥈', label: 'Plata',      id: 'sec-prebe-plata' },
+        { icon: '🏒', label: 'Iniciació',  id: 'sec-prebe-iniciacio' },
+      ]
+    },
+    {
+      icon: '🏒', label: 'Benjamí', id: 'sec-benjami',
+      children: [
+        { icon: '🥇', label: 'Or',    id: 'sec-benjami-or' },
+        { icon: '🥈', label: 'Plata', id: 'sec-benjami-plata' },
+      ]
+    },
+    {
+      icon: '📸', label: 'Instagram', id: 'sec-campus',
+      children: [
+        { icon: '🔵', label: '@ch_ripollet',       id: 'sec-campus', anchor: 'ig-chr' },
+        { icon: '🎽', label: 'OK Campus S. Miras', id: 'sec-campus', anchor: 'ig-campus' },
+      ]
+    },
+    { icon: '📊', label: 'Temporada', id: 'sec-temporada' },
+  ];
+
+  // Build tab buttons
+  nav.innerHTML = tabs.map((t, i) => `
+    <button class="bn-tab" data-idx="${i}" aria-label="${t.label}">
+      <span class="bn-icon">${t.icon}</span>
+      <span>${t.label}</span>
+    </button>
+  `).join('');
+
+  let activeIdx = -1;
+
+  function openSheet(tab, idx) {
+    sheetItems.innerHTML = `
+      ${tab.children.map(c => `
+        <button class="bs-item"
+          data-section="${c.id}"
+          ${c.anchor ? `data-anchor="${c.anchor}"` : ''}>
+          <span class="bs-item-icon">${c.icon}</span>
+          ${c.label}
+        </button>
+      `).join('')}
+      <div class="bs-divider"></div>
+      <a class="bs-item bs-admin" href="admin.html">
+        <span class="bs-item-icon">🔧</span>
+        Administrador
+      </a>
+    `;
+    sheet.classList.add('open');
+    overlay.classList.add('open');
+
+    sheetItems.querySelectorAll('.bs-item[data-section]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigate(btn.dataset.section, btn.dataset.anchor);
+        closeSheet();
+        setActive(idx);
+      });
+    });
+  }
+
+  function closeSheet() {
+    sheet.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+
+  function setActive(idx) {
+    activeIdx = idx;
+    nav.querySelectorAll('.bn-tab').forEach((b, i) => b.classList.toggle('active', i === idx));
+  }
+
+  function navigate(sectionId, anchor) {
+    const sec = document.getElementById(sectionId);
+    if (!sec) return;
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (anchor) {
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 320);
+    }
+  }
+
+  nav.querySelectorAll('.bn-tab').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const tab = tabs[i];
+      if (tab.children) {
+        if (sheet.classList.contains('open') && activeIdx === i) {
+          closeSheet(); return;
+        }
+        openSheet(tab, i);
+        setActive(i);
+      } else {
+        closeSheet();
+        navigate(tab.id);
+        setActive(i);
+      }
+    });
+  });
+
+  overlay.addEventListener('click', closeSheet);
+}
+
 function renderNavItem(item) {
   if (item.type === 'separator') return '<div class="nav-separator"></div>';
   if (item.type === 'direct') {
@@ -113,6 +238,12 @@ function renderNavItem(item) {
       <span class="nav-icon">${item.icon}</span>
       ${item.label}
     </button>`;
+  }
+  if (item.type === 'link') {
+    return `<a class="nav-direct nav-link-item" href="${item.href}">
+      <span class="nav-icon">${item.icon}</span>
+      ${item.label}
+    </a>`;
   }
   if (item.type === 'group') {
     const children = item.children.map(c =>
