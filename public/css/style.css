@@ -424,6 +424,21 @@ img { display: block; }
 
 .maps-link:hover { opacity: 0.8; }
 
+.maps-embed-wrap {
+  margin-top: 1rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  line-height: 0;
+}
+
+.maps-embed-wrap iframe {
+  width: 100%;
+  height: 260px;
+  border: 0;
+  display: block;
+}
+
 .info-tree-icon {
   font-size: 16px;
   flex-shrink: 0;

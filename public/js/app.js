@@ -66,7 +66,7 @@ function buildSidebar() {
       ]
     },
     { type: 'separator' },
-    { type: 'direct', label: 'Campus OK Sergi Miras', icon: '📸', id: 'sec-campus' },
+    { type: 'direct', label: 'Instagram', icon: '📸', id: 'sec-campus' },
     { type: 'direct', label: 'Resultats Temporada', icon: '📊', id: 'sec-temporada' },
   ];
 
@@ -258,6 +258,15 @@ function buildInfoSection() {
             <span class="info-tree-value"><a href="tel:${c.phone.replace(/\s/g,'')}">${c.phone}</a></span>
           </div>
         `).join('')}
+      </div>
+      <div class="maps-embed-wrap">
+        <iframe
+          title="Pavelló Municipal Joan Creus — Ripollet"
+          src="https://maps.google.com/maps?q=Pavell%C3%B3+Municipal+d%27Esports+Joan+Creus+Ripollet&t=&z=17&output=embed&hl=ca"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
       </div>
     </div>
   `;
@@ -534,37 +543,63 @@ function buildInstagramSection() {
   sec.className = 'section';
   sec.id = 'sec-campus';
 
-  const url = DATA.links.instagram;
+  const urlCampus = DATA.links.instagram;
+  const urlClub   = DATA.links.instagramClub || 'https://www.instagram.com/ch_ripollet/';
 
   sec.innerHTML = `
     <div class="section-header">
       <span class="section-icon">📸</span>
-      <h2>Campus OK Sergi Miras</h2>
+      <h2>Instagram</h2>
     </div>
+
+    <!-- Club CHR -->
+    <div class="instagram-section" style="margin-bottom:1.5rem">
+      <div class="instagram-header">
+        <span class="instagram-icon">📸</span>
+        <div class="instagram-header-text">
+          <h3>@ch_ripollet</h3>
+          <p>Perfil oficial del Club Hoquei Ripollet</p>
+        </div>
+      </div>
+      <div class="instagram-embed-area">
+        <blockquote class="instagram-media"
+          data-instgrm-permalink="${urlClub}"
+          data-instgrm-version="14"
+          style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:0 auto; max-width:540px; width:100%;">
+          <div style="padding:16px;">
+            <a href="${urlClub}" target="_blank" style="color:#0033a0; font-weight:600;">
+              Veure @ch_ripollet a Instagram →
+            </a>
+          </div>
+        </blockquote>
+        <div class="instagram-fallback">
+          <a href="${urlClub}" target="_blank" rel="noopener">📸 Obrir Instagram del Club</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- OK Campus Sergi Miras -->
     <div class="instagram-section">
       <div class="instagram-header">
         <span class="instagram-icon">📸</span>
         <div class="instagram-header-text">
-          <h3>@okcampussergimiras</h3>
+          <h3>OK Campus Sergi Miras</h3>
           <p>Campus d'estiu de hoquei patins · Segueix les últimes publicacions</p>
         </div>
       </div>
       <div class="instagram-embed-area">
         <blockquote class="instagram-media"
-          data-instgrm-permalink="${url}"
+          data-instgrm-permalink="${urlCampus}"
           data-instgrm-version="14"
-          style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 0 auto; max-width:540px; width:100%;">
+          style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:0 auto; max-width:540px; width:100%;">
           <div style="padding:16px;">
-            <a href="${url}" target="_blank" style="color:#0033a0; font-weight:600;">
+            <a href="${urlCampus}" target="_blank" style="color:#0033a0; font-weight:600;">
               Veure @okcampussergimiras a Instagram →
             </a>
           </div>
         </blockquote>
         <div class="instagram-fallback">
-          <p>Si no es visualitza correctament, accedeix directament:</p>
-          <a href="${url}" target="_blank" rel="noopener">
-            📸 Obrir Instagram del Campus
-          </a>
+          <a href="${urlCampus}" target="_blank" rel="noopener">📸 Obrir Instagram del Campus</a>
         </div>
       </div>
     </div>
@@ -600,7 +635,7 @@ function buildOkCat360Section() {
     <a href="${url}" target="_blank" rel="noopener" class="okcat360-card">
       <div class="okcat360-text">
         <h3>okCat360</h3>
-        <p>Totes les competicions del Club Hoquei Ripollet: classificacions, resultats i estadístiques de la temporada completa</p>
+        <p>Classificacions, resultats i estadístiques de tots els clubs i competicions de la temporada</p>
       </div>
       <div class="okcat360-arrow">→</div>
     </a>
