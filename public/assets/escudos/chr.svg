@@ -1,19 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Background diamond -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
   <defs>
-    <linearGradient id="chrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0066cc;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#004399;stop-opacity:1" />
-    </linearGradient>
+    <clipPath id="chr-clip">
+      <polygon points="60,4 116,60 60,116 4,60"/>
+    </clipPath>
   </defs>
-
-  <!-- Shield shape -->
-  <path d="M 50 5 L 80 30 L 80 60 Q 80 85 50 95 Q 20 85 20 60 L 20 30 Z" fill="url(#chrGrad)" stroke="#fff" stroke-width="1"/>
-
-  <!-- CHR text -->
-  <text x="50" y="55" font-size="24" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">CHR</text>
-
-  <!-- Catalan flag stripes at bottom -->
-  <rect x="20" y="75" width="60" height="8" fill="#FFC400"/>
-  <rect x="20" y="83" width="60" height="8" fill="#C60C30"/>
+  <!-- Diamond background navy -->
+  <polygon points="60,4 116,60 60,116 4,60" fill="#0a1d6e"/>
+  <g clip-path="url(#chr-clip)">
+    <!-- Catalan stripes bottom -->
+    <rect x="0" y="76" width="120" height="44" fill="#FCCA00"/>
+    <rect x="0" y="76" width="120" height="11" fill="#CC1122"/>
+    <rect x="0" y="94" width="120" height="11" fill="#CC1122"/>
+    <rect x="0" y="112" width="120" height="8" fill="#CC1122"/>
+    <!-- Hockey stick white -->
+    <rect x="65" y="14" width="7" height="48" rx="3.5" fill="white"/>
+    <path d="M 68.5 60 Q 68.5 74 53 74 L 44 74" stroke="white" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <!-- Wave (left, middle) -->
+    <path d="M 22 52 Q 28 44 34 52 Q 40 60 46 52" stroke="#52C8E8" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Chick body -->
+    <ellipse cx="84" cy="38" rx="9" ry="8" fill="white"/>
+    <!-- Chick head -->
+    <circle cx="90" cy="28" r="7" fill="white"/>
+    <!-- Beak -->
+    <polygon points="97,27 103,29 97,32" fill="#FCCA00"/>
+    <!-- Eye -->
+    <circle cx="93" cy="27" r="2" fill="#0a1d6e"/>
+    <!-- Wing line -->
+    <path d="M 76 42 Q 80 48 84 44" stroke="#cce0ff" stroke-width="2" fill="none"/>
+  </g>
+  <!-- Border -->
+  <polygon points="60,4 116,60 60,116 4,60" fill="none" stroke="white" stroke-width="3"/>
 </svg>

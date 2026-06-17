@@ -1,463 +1,481 @@
+/* Admin panel — CH Ripollet Torneig 2026 */
+
 let tournamentData = null;
-let isAuthenticated = false;
+let authToken = null;
+let sbMatchId = null;
+let sbHome = 0;
+let sbAway = 0;
+let sbPenalty = '';
 
-// On page load
+// ─── Init ────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // Check if password is in URL
-  const params = new URLSearchParams(window.location.search);
-  const pwd = params.get('pwd');
-
-  if (pwd) {
-    await authenticateWithPassword(pwd);
-  }
-
-  setupEventListeners();
   await loadData();
-
-  if (!isAuthenticated) {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('admin-panel').style.display = 'none';
-  } else {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'flex';
-    populateSelects();
-    renderMatchesList();
-  }
+  setupLoginForm();
+  setupLogout();
+  setupTabs();
+  setupFormListeners();
+  setupAdminNav();
 });
 
-// Setup event listeners
-function setupEventListeners() {
-  // Login form
-  document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const pwd = document.getElementById('password-input').value;
-    await authenticateWithPassword(pwd);
-  });
+// ─── Data ─────────────────────────────────────────────────────────────────────
 
-  // Logout button
+async function loadData() {
+  try {
+    const res = await fetch(`data.json?v=${Date.now()}`);
+    tournamentData = await res.json();
+  } catch (e) {
+    console.error('Error loading data:', e);
+  }
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+function setupLoginForm() {
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const pwd = document.getElementById('pwd-input').value.trim();
+    if (!pwd) return;
+
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      });
+      const data = await res.json();
+
+      if (data.authenticated) {
+        authToken = pwd;
+        enterAdminPanel();
+      } else {
+        errEl.textContent = 'Contrasenya incorrecta';
+      }
+    } catch {
+      errEl.textContent = 'Error de connexió';
+    }
+  });
+}
+
+function setupLogout() {
   document.getElementById('logout-btn').addEventListener('click', () => {
-    isAuthenticated = false;
+    authToken = null;
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('password-input').value = '';
+    document.getElementById('pwd-input').value = '';
   });
+}
 
-  // Admin tabs
-  document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+function enterAdminPanel() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'flex';
+  populateAllSelects();
+  renderMatchesStatus();
+}
+
+// ─── Sidebar nav ──────────────────────────────────────────────────────────────
+
+function setupAdminNav() {
+  const nav = document.getElementById('admin-nav');
+  if (!nav) return;
+  nav.innerHTML = `
+    <button class="admin-nav-item active" onclick="scrollToSection('admin-match-section', this)">
+      📝 Actualitzar Resultats
+    </button>
+    <button class="admin-nav-item" onclick="scrollToSection('matches-status-section', this)">
+      📋 Estat dels Partits
+    </button>
+  `;
+}
+
+function scrollToSection(id, btn) {
+  document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+function setupTabs() {
+  document.querySelectorAll('.admin-tab').forEach(btn => {
     btn.addEventListener('click', () => {
-      const tabName = btn.dataset.tab;
-      document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById(tabName + '-view').classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab)?.classList.add('active');
     });
   });
+}
 
-  // Form submission
-  document.getElementById('update-form').addEventListener('submit', async (e) => {
+// ─── Selects population ───────────────────────────────────────────────────────
+
+function populateAllSelects() {
+  if (!tournamentData) return;
+  populateCategorySelect('f-category');
+  populateCategorySelect('sb-category');
+}
+
+function populateCategorySelect(id) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Selecciona…</option>';
+  tournamentData.categories.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.id;
+    o.textContent = c.name;
+    sel.appendChild(o);
+  });
+}
+
+function populateDivisionSelect(catId, selId) {
+  const sel = document.getElementById(selId);
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Selecciona…</option>';
+  if (!catId || !tournamentData) return;
+  const cat = tournamentData.categories.find(c => c.id === catId);
+  if (!cat) return;
+  cat.divisions.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.id;
+    o.textContent = d.name;
+    sel.appendChild(o);
+  });
+}
+
+function populateMatchSelect(catId, divId, selId) {
+  const sel = document.getElementById(selId);
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Selecciona…</option>';
+  if (!catId || !divId || !tournamentData) return;
+  const cat = tournamentData.categories.find(c => c.id === catId);
+  const div = cat?.divisions.find(d => d.id === divId);
+  if (!div) return;
+  div.matches.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m.id;
+    o.textContent = `${m.time} · ${m.home} vs ${m.away}`;
+    sel.appendChild(o);
+  });
+}
+
+// ─── Form tab listeners ───────────────────────────────────────────────────────
+
+function setupFormListeners() {
+  // Form selects cascade
+  document.getElementById('f-category').addEventListener('change', e => {
+    populateDivisionSelect(e.target.value, 'f-division');
+    document.getElementById('f-match').innerHTML = '<option value="">Selecciona…</option>';
+    hideFormPreview();
+  });
+
+  document.getElementById('f-division').addEventListener('change', e => {
+    const catId = document.getElementById('f-category').value;
+    populateMatchSelect(catId, e.target.value, 'f-match');
+    hideFormPreview();
+  });
+
+  document.getElementById('f-match').addEventListener('change', e => {
+    const match = findMatchById(e.target.value);
+    if (match) {
+      showFormPreview(match);
+      setFormScores(match);
+    } else {
+      hideFormPreview();
+    }
+  });
+
+  // Score inputs → show/hide penalty
+  document.getElementById('f-home-score').addEventListener('input', checkPenaltyVisibility);
+  document.getElementById('f-away-score').addEventListener('input', checkPenaltyVisibility);
+
+  // Form submit
+  document.getElementById('update-form').addEventListener('submit', async e => {
     e.preventDefault();
     await submitFormUpdate();
   });
 
-  // Form selects
-  document.getElementById('form-category').addEventListener('change', updateFormDivisions);
-  document.getElementById('form-division').addEventListener('change', updateFormMatches);
+  // Scoreboard selects cascade
+  document.getElementById('sb-category').addEventListener('change', e => {
+    populateDivisionSelect(e.target.value, 'sb-division');
+    document.getElementById('sb-match').innerHTML = '<option value="">Selecciona…</option>';
+    resetScoreboard();
+  });
 
-  // Visual selects
-  document.getElementById('visual-category').addEventListener('change', updateVisualDivisions);
-  document.getElementById('visual-division').addEventListener('change', updateVisualMatches);
-  document.getElementById('visual-match').addEventListener('change', updateScoreboard);
+  document.getElementById('sb-division').addEventListener('change', e => {
+    const catId = document.getElementById('sb-category').value;
+    populateMatchSelect(catId, e.target.value, 'sb-match');
+    resetScoreboard();
+  });
+
+  document.getElementById('sb-match').addEventListener('change', e => {
+    const match = findMatchById(e.target.value);
+    if (match) renderScoreboard(match);
+    else resetScoreboard();
+  });
 }
 
-// Authenticate with password
-async function authenticateWithPassword(pwd) {
-  try {
-    const response = await fetch('api/auth.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd })
-    });
+// ─── Form preview & penalty ───────────────────────────────────────────────────
 
-    const data = await response.json();
+function showFormPreview(match) {
+  const el = document.getElementById('f-match-preview');
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="mp-team">
+      <img src="assets/escudos/${match.homeKey}.svg" alt="${match.home}" onerror="this.remove()">
+      <span>${match.home}</span>
+    </div>
+    <span class="mp-vs">vs</span>
+    <div class="mp-team">
+      <img src="assets/escudos/${match.awayKey}.svg" alt="${match.away}" onerror="this.remove()">
+      <span>${match.away}</span>
+    </div>
+  `;
 
-    if (data.authenticated) {
-      isAuthenticated = true;
-      document.getElementById('admin-panel').style.display = 'flex';
-      document.getElementById('login-screen').style.display = 'none';
-      populateSelects();
-      renderMatchesList();
-    } else {
-      showLoginError('Contrasenya incorrecta');
-    }
-  } catch (error) {
-    // Try local validation (for development)
-    const adminPwd = 'cambiar123'; // Default password
-    if (pwd === adminPwd) {
-      isAuthenticated = true;
-      document.getElementById('admin-panel').style.display = 'flex';
-      document.getElementById('login-screen').style.display = 'none';
-      populateSelects();
-      renderMatchesList();
-    } else {
-      showLoginError('Contrasenya incorrecta');
-    }
+  // Update penalty team labels
+  document.getElementById('f-penalty-home').textContent = match.home;
+  document.getElementById('f-penalty-away').textContent = match.away;
+}
+
+function hideFormPreview() {
+  document.getElementById('f-match-preview').style.display = 'none';
+  document.getElementById('f-penalty-section').style.display = 'none';
+  document.querySelector('input[name="penalty"][value=""]').checked = true;
+}
+
+function setFormScores(match) {
+  document.getElementById('f-home-score').value = match.homeScore;
+  document.getElementById('f-away-score').value = match.awayScore;
+  document.getElementById('f-played').checked = match.played;
+
+  // Set penalty radio
+  const pw = match.penaltyWinner || '';
+  const radio = document.querySelector(`input[name="penalty"][value="${pw}"]`);
+  if (radio) radio.checked = true;
+
+  checkPenaltyVisibility();
+}
+
+function checkPenaltyVisibility() {
+  const h = parseInt(document.getElementById('f-home-score').value) || 0;
+  const a = parseInt(document.getElementById('f-away-score').value) || 0;
+  const section = document.getElementById('f-penalty-section');
+
+  if (h === a) {
+    section.style.display = 'block';
+  } else {
+    section.style.display = 'none';
+    document.querySelector('input[name="penalty"][value=""]').checked = true;
   }
 }
 
-function showLoginError(message) {
-  document.getElementById('login-error').textContent = message;
-  setTimeout(() => {
-    document.getElementById('login-error').textContent = '';
-  }, 4000);
-}
+// ─── Form submit ──────────────────────────────────────────────────────────────
 
-// Load tournament data
-async function loadData() {
-  try {
-    const response = await fetch('data.json');
-    tournamentData = await response.json();
-  } catch (error) {
-    console.error('Error loading data:', error);
-  }
-}
-
-// Populate category selects
-function populateSelects() {
-  if (!tournamentData) return;
-
-  const formCategory = document.getElementById('form-category');
-  const visualCategory = document.getElementById('visual-category');
-
-  formCategory.innerHTML = '<option value="">Selecciona categoria...</option>';
-  visualCategory.innerHTML = '<option value="">Selecciona categoria...</option>';
-
-  tournamentData.categories.forEach(category => {
-    const opt1 = document.createElement('option');
-    opt1.value = category.id;
-    opt1.textContent = category.name;
-    formCategory.appendChild(opt1);
-
-    const opt2 = document.createElement('option');
-    opt2.value = category.id;
-    opt2.textContent = category.name;
-    visualCategory.appendChild(opt2);
-  });
-}
-
-// Update division selects based on category
-function updateFormDivisions() {
-  const categoryId = document.getElementById('form-category').value;
-  const divisionSelect = document.getElementById('form-division');
-
-  divisionSelect.innerHTML = '<option value="">Selecciona divisió...</option>';
-
-  if (!categoryId || !tournamentData) return;
-
-  const category = tournamentData.categories.find(c => c.id === categoryId);
-  if (!category) return;
-
-  category.divisions.forEach(division => {
-    const opt = document.createElement('option');
-    opt.value = division.id;
-    opt.textContent = division.name;
-    divisionSelect.appendChild(opt);
-  });
-}
-
-function updateVisualDivisions() {
-  const categoryId = document.getElementById('visual-category').value;
-  const divisionSelect = document.getElementById('visual-division');
-
-  divisionSelect.innerHTML = '<option value="">Selecciona divisió...</option>';
-
-  if (!categoryId || !tournamentData) return;
-
-  const category = tournamentData.categories.find(c => c.id === categoryId);
-  if (!category) return;
-
-  category.divisions.forEach(division => {
-    const opt = document.createElement('option');
-    opt.value = division.id;
-    opt.textContent = division.name;
-    divisionSelect.appendChild(opt);
-  });
-}
-
-// Update match selects based on division
-function updateFormMatches() {
-  const categoryId = document.getElementById('form-category').value;
-  const divisionId = document.getElementById('form-division').value;
-  const matchSelect = document.getElementById('form-match');
-
-  matchSelect.innerHTML = '<option value="">Selecciona partit...</option>';
-
-  if (!categoryId || !divisionId || !tournamentData) return;
-
-  const category = tournamentData.categories.find(c => c.id === categoryId);
-  const division = category?.divisions.find(d => d.id === divisionId);
-
-  if (!division) return;
-
-  division.matches.forEach(match => {
-    const opt = document.createElement('option');
-    opt.value = match.id;
-    opt.textContent = `${match.time} - ${match.home} vs ${match.away}`;
-    matchSelect.appendChild(opt);
-  });
-}
-
-function updateVisualMatches() {
-  const categoryId = document.getElementById('visual-category').value;
-  const divisionId = document.getElementById('visual-division').value;
-  const matchSelect = document.getElementById('visual-match');
-
-  matchSelect.innerHTML = '<option value="">Selecciona partit...</option>';
-
-  if (!categoryId || !divisionId || !tournamentData) return;
-
-  const category = tournamentData.categories.find(c => c.id === categoryId);
-  const division = category?.divisions.find(d => d.id === divisionId);
-
-  if (!division) return;
-
-  division.matches.forEach(match => {
-    const opt = document.createElement('option');
-    opt.value = match.id;
-    opt.textContent = `${match.time} - ${match.home} vs ${match.away}`;
-    matchSelect.appendChild(opt);
-  });
-}
-
-// Submit form update
 async function submitFormUpdate() {
-  const matchId = document.getElementById('form-match').value;
-  const homeScore = parseInt(document.getElementById('form-home-score').value);
-  const awayScore = parseInt(document.getElementById('form-away-score').value);
-  const played = document.getElementById('form-played').checked;
-
+  const matchId = document.getElementById('f-match').value;
   if (!matchId) {
-    showMessage('form-message', 'error', 'Selecciona un partit');
+    showMsg('form-msg', 'error', 'Selecciona un partit');
     return;
   }
 
-  try {
-    const response = await fetch('api/matches.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        password: 'cambiar123',
-        matchId,
-        homeScore,
-        awayScore,
-        played
-      })
-    });
+  const homeScore = parseInt(document.getElementById('f-home-score').value) || 0;
+  const awayScore = parseInt(document.getElementById('f-away-score').value) || 0;
+  const played = document.getElementById('f-played').checked;
 
-    const data = await response.json();
-
-    if (data.success) {
-      showMessage('form-message', 'success', 'Resultat actualitzat!');
-      await loadData();
-      populateSelects();
-      renderMatchesList();
-      setTimeout(() => {
-        document.getElementById('update-form').reset();
-      }, 1000);
-    } else {
-      showMessage('form-message', 'error', data.error || 'Error actualitzant resultat');
-    }
-  } catch (error) {
-    showMessage('form-message', 'error', 'Error: No es pot connectar amb el servidor');
+  let penaltyWinner = null;
+  if (homeScore === awayScore) {
+    const radio = document.querySelector('input[name="penalty"]:checked');
+    penaltyWinner = radio?.value || null;
+    if (penaltyWinner === '') penaltyWinner = null;
   }
+
+  await saveMatch({ matchId, homeScore, awayScore, played, penaltyWinner }, 'form-msg');
 }
 
-// Update scoreboard
-function updateScoreboard() {
-  const matchId = document.getElementById('visual-match').value;
-  const container = document.getElementById('scoreboard');
+// ─── Scoreboard ───────────────────────────────────────────────────────────────
 
-  if (!matchId) {
-    container.innerHTML = '<p>Selecciona un partit per editar</p>';
-    return;
-  }
+function renderScoreboard(match) {
+  sbMatchId = match.id;
+  sbHome = match.homeScore;
+  sbAway = match.awayScore;
+  sbPenalty = match.penaltyWinner || '';
 
-  const match = findMatchById(matchId);
-  if (!match) {
-    container.innerHTML = '<p>Partit no trobat</p>';
-    return;
-  }
-
-  const homeImg = `<img src="${match.homeShield}" alt="${match.home}" class="scoreboard-team-shield" onerror="this.style.display='none'">`;
-  const awayImg = `<img src="${match.awayShield}" alt="${match.away}" class="scoreboard-team-shield" onerror="this.style.display='none'">`;
-
+  const container = document.getElementById('scoreboard-display');
   container.innerHTML = `
-    <div class="scoreboard-match">
-      <div class="scoreboard-team">
-        ${homeImg}
-        <div class="scoreboard-team-name">${match.home}</div>
-      </div>
-
-      <div class="scoreboard-score">
-        <div class="scoreboard-score-display" id="visual-score">${match.homeScore} - ${match.awayScore}</div>
-        <div class="scoreboard-controls">
-          <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center;">
-            <button class="btn-increment" onclick="incrementHome('${matchId}')">+1 Local</button>
-            <span style="text-align: center; font-size: 18px; font-weight: bold;">vs</span>
-            <button class="btn-increment" onclick="incrementAway('${matchId}')">+1 Visit.</button>
+    <div class="sb-teams">
+      <div class="sb-team">
+        <img src="assets/escudos/${match.homeKey}.svg" alt="${match.home}" onerror="this.remove()">
+        <div class="sb-team-name">${match.home}</div>
+        <div class="sb-score-area">
+          <div class="sb-score-btns">
+            <button class="sb-score-btn" onclick="sbAdjust('home',-1)">−</button>
+            <div class="sb-score-val" id="sb-val-home">${match.homeScore}</div>
+            <button class="sb-score-btn" onclick="sbAdjust('home',+1)">+</button>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center;">
-            <button class="btn-decrement" onclick="decrementHome('${matchId}')">-1 Local</button>
-            <span></span>
-            <button class="btn-decrement" onclick="decrementAway('${matchId}')">-1 Visit.</button>
-          </div>
-          <button class="btn-save" onclick="saveVisualUpdate('${matchId}')">💾 Guardar</button>
         </div>
       </div>
 
-      <div class="scoreboard-team">
-        ${awayImg}
-        <div class="scoreboard-team-name">${match.away}</div>
+      <div>
+        <div class="sb-vs">VS</div>
+      </div>
+
+      <div class="sb-team">
+        <img src="assets/escudos/${match.awayKey}.svg" alt="${match.away}" onerror="this.remove()">
+        <div class="sb-team-name">${match.away}</div>
+        <div class="sb-score-area">
+          <div class="sb-score-btns">
+            <button class="sb-score-btn" onclick="sbAdjust('away',-1)">−</button>
+            <div class="sb-score-val" id="sb-val-away">${match.awayScore}</div>
+            <button class="sb-score-btn" onclick="sbAdjust('away',+1)">+</button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div id="sb-penalty-area" class="sb-penalty" style="display:${match.homeScore === match.awayScore ? 'block' : 'none'}">
+      <div class="sb-penalty-label">⚡ Empat — qui guanya la directa?</div>
+      <div class="sb-penalty-btns">
+        <button class="sb-penalty-btn ${match.penaltyWinner === 'home' ? 'active' : ''}"
+          onclick="sbSetPenalty('home','${match.home}')">${match.home}</button>
+        <button class="sb-penalty-btn ${!match.penaltyWinner ? 'active' : ''}"
+          onclick="sbSetPenalty('','')">Empat definitiu</button>
+        <button class="sb-penalty-btn ${match.penaltyWinner === 'away' ? 'active' : ''}"
+          onclick="sbSetPenalty('away','${match.away}')">${match.away}</button>
+      </div>
+    </div>
+
+    <button class="sb-save-btn" onclick="sbSave()">💾 Guardar Resultat</button>
   `;
 }
 
-// Helper functions for scoreboard
-let tempScores = {};
-
-window.incrementHome = function(matchId) {
-  const match = findMatchById(matchId);
-  if (!match) return;
-  const key = matchId + '_home';
-  tempScores[key] = (tempScores[key] ?? match.homeScore) + 1;
-  updateScoreDisplay(matchId);
+window.sbAdjust = function(side, delta) {
+  if (side === 'home') {
+    sbHome = Math.max(0, sbHome + delta);
+    document.getElementById('sb-val-home').textContent = sbHome;
+  } else {
+    sbAway = Math.max(0, sbAway + delta);
+    document.getElementById('sb-val-away').textContent = sbAway;
+  }
+  updateSbPenaltyVisibility();
 };
 
-window.incrementAway = function(matchId) {
-  const match = findMatchById(matchId);
-  if (!match) return;
-  const key = matchId + '_away';
-  tempScores[key] = (tempScores[key] ?? match.awayScore) + 1;
-  updateScoreDisplay(matchId);
+window.sbSetPenalty = function(val) {
+  sbPenalty = val;
+  document.querySelectorAll('.sb-penalty-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
 };
 
-window.decrementHome = function(matchId) {
-  const match = findMatchById(matchId);
-  if (!match) return;
-  const key = matchId + '_home';
-  const current = tempScores[key] ?? match.homeScore;
-  tempScores[key] = Math.max(0, current - 1);
-  updateScoreDisplay(matchId);
-};
-
-window.decrementAway = function(matchId) {
-  const match = findMatchById(matchId);
-  if (!match) return;
-  const key = matchId + '_away';
-  const current = tempScores[key] ?? match.awayScore;
-  tempScores[key] = Math.max(0, current - 1);
-  updateScoreDisplay(matchId);
-};
-
-function updateScoreDisplay(matchId) {
-  const match = findMatchById(matchId);
-  if (!match) return;
-  const home = tempScores[matchId + '_home'] ?? match.homeScore;
-  const away = tempScores[matchId + '_away'] ?? match.awayScore;
-  document.getElementById('visual-score').textContent = `${home} - ${away}`;
+function updateSbPenaltyVisibility() {
+  const area = document.getElementById('sb-penalty-area');
+  if (!area) return;
+  if (sbHome === sbAway) {
+    area.style.display = 'block';
+  } else {
+    area.style.display = 'none';
+    sbPenalty = '';
+  }
 }
 
-window.saveVisualUpdate = async function(matchId) {
-  const match = findMatchById(matchId);
-  if (!match) return;
+window.sbSave = async function() {
+  if (!sbMatchId) return;
+  const penaltyWinner = (sbHome === sbAway && sbPenalty) ? sbPenalty : null;
+  await saveMatch({
+    matchId: sbMatchId,
+    homeScore: sbHome,
+    awayScore: sbAway,
+    played: true,
+    penaltyWinner
+  }, 'sb-msg');
+};
 
-  const homeScore = tempScores[matchId + '_home'] ?? match.homeScore;
-  const awayScore = tempScores[matchId + '_away'] ?? match.awayScore;
+function resetScoreboard() {
+  sbMatchId = null;
+  document.getElementById('scoreboard-display').innerHTML =
+    '<p class="sb-placeholder">Selecciona un partit per editar</p>';
+}
 
+// ─── API call ─────────────────────────────────────────────────────────────────
+
+async function saveMatch(payload, msgId) {
   try {
-    const response = await fetch('api/matches.js', {
+    const res = await fetch('/api/matches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        password: 'cambiar123',
-        matchId,
-        homeScore,
-        awayScore,
-        played: true
-      })
+      body: JSON.stringify({ password: authToken, ...payload })
     });
-
-    const data = await response.json();
+    const data = await res.json();
 
     if (data.success) {
-      showMessage('visual-message', 'success', 'Resultat actualitzat!');
+      showMsg(msgId, 'success', '✓ Resultat guardat! S\'actualitzarà en ~30 segons.');
+      const notice = document.getElementById('save-notice');
+      notice.style.display = 'block';
+      setTimeout(() => { notice.style.display = 'none'; }, 8000);
+
       await loadData();
-      tempScores = {};
-      updateScoreboard();
-      renderMatchesList();
-    } else {
-      showMessage('visual-message', 'error', data.error || 'Error actualitzant resultat');
-    }
-  } catch (error) {
-    showMessage('visual-message', 'error', 'Error: No es pot connectar');
-  }
-};
+      renderMatchesStatus();
 
-// Find match by ID
-function findMatchById(matchId) {
-  if (!tournamentData) return null;
-
-  for (const category of tournamentData.categories) {
-    for (const division of category.divisions) {
-      for (const match of division.matches) {
-        if (match.id === matchId) {
-          return match;
-        }
+      // Refresh the scoreboard if we're on that tab
+      if (sbMatchId === payload.matchId) {
+        const m = findMatchById(payload.matchId);
+        if (m) renderScoreboard(m);
       }
+    } else {
+      showMsg(msgId, 'error', data.error || 'Error desconegut');
     }
+  } catch (e) {
+    showMsg(msgId, 'error', 'Error de connexió amb el servidor');
   }
-  return null;
 }
 
-// Render matches list
-function renderMatchesList() {
-  const container = document.getElementById('matches-list');
-  if (!tournamentData) return;
+// ─── Matches status list ──────────────────────────────────────────────────────
 
+function renderMatchesStatus() {
+  const container = document.getElementById('matches-status-list');
+  if (!container || !tournamentData) return;
   container.innerHTML = '';
 
-  tournamentData.categories.forEach(category => {
-    category.divisions.forEach(division => {
-      division.matches.forEach(match => {
-        const card = document.createElement('div');
-        card.className = 'match-card';
+  tournamentData.categories.forEach(cat => {
+    cat.divisions.forEach(div => {
+      div.matches.forEach(m => {
+        const row = document.createElement('div');
+        row.className = 'status-match-row';
 
-        const statusClass = match.played ? 'played' : 'pending';
-        const statusText = match.played ? '✓ Jugat' : '⏳ Pendent';
+        const penLabel = m.penaltyWinner
+          ? `<span class="status-match-penalty">[D: ${m.penaltyWinner === 'home' ? m.home : m.away}]</span>`
+          : '';
 
-        card.innerHTML = `
-          <div class="match-card-info">
-            <div class="match-card-time">${match.time}</div>
-            <div class="match-card-teams">${match.home} vs ${match.away}</div>
-            <div class="match-card-result">${match.homeScore} - ${match.awayScore}</div>
-          </div>
-          <div class="match-card-status ${statusClass}">${statusText}</div>
+        row.innerHTML = `
+          <span class="status-dot ${m.played ? 'played' : 'pending'}"></span>
+          <span class="status-match-time">${m.time}</span>
+          <span class="status-match-teams">${m.home} vs ${m.away}</span>
+          ${m.played
+            ? `<span class="status-match-score">${m.homeScore}–${m.awayScore}</span>${penLabel}`
+            : '<span class="status-match-score" style="color:rgba(255,255,255,0.3)">–</span>'}
         `;
-
-        container.appendChild(card);
+        container.appendChild(row);
       });
     });
   });
 }
 
-// Show message
-function showMessage(elementId, type, text) {
-  const el = document.getElementById(elementId);
-  el.textContent = text;
-  el.className = `message ${type}`;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-  setTimeout(() => {
-    el.className = 'message';
-    el.textContent = '';
-  }, 4000);
+function findMatchById(id) {
+  if (!tournamentData) return null;
+  for (const cat of tournamentData.categories)
+    for (const div of cat.divisions)
+      for (const m of div.matches)
+        if (m.id === id) return m;
+  return null;
+}
+
+function showMsg(id, type, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = `msg ${type}`;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 5000);
 }

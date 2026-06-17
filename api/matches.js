@@ -1,72 +1,104 @@
-import fs from 'fs';
-import path from 'path';
+/**
+ * POST /api/matches — update a match result
+ *
+ * Uses the GitHub Contents API to read + update public/data.json directly in
+ * the repo so the change persists across Vercel deployments.
+ *
+ * Required env vars (set in Vercel dashboard → Settings → Environment Variables):
+ *   ADMIN_PASSWORD   — the admin panel password
+ *   GITHUB_TOKEN     — a fine-grained PAT with "Contents: Read and write" on this repo
+ *   GITHUB_REPO      — owner/repo, e.g. "sergireven/torneig-ripollet"
+ *   GITHUB_BRANCH    — branch to write to (default: "main")
+ */
 
-const DATA_FILE = path.join(process.cwd(), 'public', 'data.json');
+const GITHUB_API = 'https://api.github.com';
+const FILE_PATH = 'public/data.json';
 
-function readData() {
-  try {
-    const data = fs.readFileSync(DATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading data:', error);
-    return null;
-  }
+async function ghGet(repo, branch, token) {
+  const url = `${GITHUB_API}/repos/${repo}/contents/${FILE_PATH}?ref=${branch}`;
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+  if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
+  return res.json(); // { content, sha, ... }
 }
 
-function writeData(data) {
-  try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
-  } catch (error) {
-    console.error('Error writing data:', error);
-    return false;
+async function ghPut(repo, branch, token, sha, content, message) {
+  const url = `${GITHUB_API}/repos/${repo}/contents/${FILE_PATH}`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify({
+      message,
+      content: Buffer.from(content).toString('base64'),
+      sha,
+      branch,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`GitHub PUT failed: ${res.status} — ${err.message || ''}`);
   }
-}
-
-function verifyPassword(pwd) {
-  const adminPwd = process.env.ADMIN_PASSWORD || 'cambiar123';
-  return pwd === adminPwd;
+  return res.json();
 }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  const GITHUB_TOKEN   = process.env.GITHUB_TOKEN;
+  const GITHUB_REPO    = process.env.GITHUB_REPO;
+  const GITHUB_BRANCH  = process.env.GITHUB_BRANCH || 'main';
+
+  // Guard: missing env vars
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    console.error('Missing GITHUB_TOKEN or GITHUB_REPO env vars');
+    return res.status(500).json({ error: 'Server not configured (missing env vars)' });
   }
 
-  if (req.method === 'GET') {
-    const data = readData();
-    if (!data) {
-      return res.status(500).json({ error: 'Could not read data' });
-    }
-    return res.status(200).json(data);
+  const { password, matchId, homeScore, awayScore, played, penaltyWinner } = req.body || {};
+
+  // Auth
+  if (!ADMIN_PASSWORD || password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contrasenya incorrecta' });
   }
 
-  if (req.method === 'POST') {
-    const { password, matchId, homeScore, awayScore, played } = req.body;
+  if (!matchId) {
+    return res.status(400).json({ error: 'matchId required' });
+  }
 
-    if (!verifyPassword(password)) {
-      return res.status(401).json({ error: 'Invalid password' });
-    }
+  try {
+    // 1. Read current file from GitHub
+    const file = await ghGet(GITHUB_REPO, GITHUB_BRANCH, GITHUB_TOKEN);
+    const raw = Buffer.from(file.content, 'base64').toString('utf-8');
+    const data = JSON.parse(raw);
 
-    const data = readData();
-    if (!data) {
-      return res.status(500).json({ error: 'Could not read data' });
-    }
-
-    // Find and update the match
+    // 2. Find and update the match
     let found = false;
-    for (const category of data.categories) {
-      for (const division of category.divisions) {
-        for (const match of division.matches) {
-          if (match.id === matchId) {
-            match.homeScore = homeScore;
-            match.awayScore = awayScore;
-            match.played = played !== undefined ? played : true;
+    for (const cat of data.categories) {
+      for (const div of cat.divisions) {
+        for (const m of div.matches) {
+          if (m.id === matchId) {
+            m.homeScore    = typeof homeScore === 'number' ? homeScore : parseInt(homeScore, 10) || 0;
+            m.awayScore    = typeof awayScore === 'number' ? awayScore : parseInt(awayScore, 10) || 0;
+            m.played       = played !== undefined ? Boolean(played) : true;
+            // penaltyWinner: "home" | "away" | null
+            m.penaltyWinner = (m.homeScore !== m.awayScore) ? null
+                              : (penaltyWinner || null);
             found = true;
             break;
           }
@@ -77,18 +109,26 @@ export default async function handler(req, res) {
     }
 
     if (!found) {
-      return res.status(404).json({ error: 'Match not found' });
+      return res.status(404).json({ error: `Partit "${matchId}" no trobat` });
     }
 
-    // Update timestamp
     data.tournament.updatedAt = new Date().toISOString();
 
-    if (writeData(data)) {
-      return res.status(200).json({ success: true, message: 'Match updated' });
-    } else {
-      return res.status(500).json({ error: 'Could not save data' });
-    }
-  }
+    // 3. Write back to GitHub
+    const newContent = JSON.stringify(data, null, 2);
+    await ghPut(
+      GITHUB_REPO,
+      GITHUB_BRANCH,
+      GITHUB_TOKEN,
+      file.sha,
+      newContent,
+      `feat: update match ${matchId} result [skip ci]`
+    );
 
-  res.status(405).json({ error: 'Method not allowed' });
+    return res.status(200).json({ success: true });
+
+  } catch (err) {
+    console.error('matches handler error:', err);
+    return res.status(500).json({ error: err.message || 'Internal error' });
+  }
 }

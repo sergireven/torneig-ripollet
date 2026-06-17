@@ -3,136 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Torneig CH Ripollet</title>
+  <title>Admin · Torneig CHR 2026</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-  <!-- LOGIN SCREEN -->
+
+  <!-- LOGIN -->
   <div id="login-screen" class="login-screen">
     <div class="login-box">
-      <h1>🔐 Admin Panel</h1>
-      <p>Introdueix la contrasenya per accedir</p>
-      <form id="login-form" class="login-form">
-        <input type="password" id="password-input" placeholder="Contrasenya" required>
+      <img src="assets/escudos/chr.svg" alt="CHR" class="login-shield">
+      <h1>Panell d'Admin</h1>
+      <p>Torneig Base d'Estiu · CH Ripollet</p>
+      <form id="login-form">
+        <input type="password" id="pwd-input" placeholder="Contrasenya" autocomplete="current-password">
         <button type="submit" class="btn-primary">Accedir</button>
       </form>
-      <p id="login-error" class="error-message"></p>
-      <a href="index.html" class="back-link">← Tornar a resultats</a>
+      <p id="login-error" class="error-msg"></p>
+      <a href="index.html" class="back-link">← Tornar als resultats</a>
     </div>
   </div>
 
   <!-- ADMIN PANEL -->
-  <div id="admin-panel" class="admin-panel" style="display: none;">
-    <!-- Header -->
-    <header class="admin-header">
-      <div class="admin-header-inner">
-        <h1>🔧 Panell d'Administrador</h1>
-        <button id="logout-btn" class="btn-secondary">Tancar sessió</button>
-      </div>
-    </header>
+  <div id="admin-panel" class="admin-layout" style="display:none">
 
-    <!-- Main Content -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="assets/escudos/chr.svg" alt="CHR" style="width:40px">
+        <div>
+          <div style="font-weight:800;color:var(--accent);font-size:14px">Admin Panel</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5)">Torneig CHR 2026</div>
+        </div>
+      </div>
+      <nav class="admin-nav" id="admin-nav">
+        <!-- filled by JS -->
+      </nav>
+      <div class="admin-sidebar-footer">
+        <a href="index.html" class="sidebar-admin-btn">← Veure web</a>
+        <button id="logout-btn" class="btn-logout">Tancar sessió</button>
+      </div>
+    </aside>
+
     <main class="admin-main">
-      <!-- Update View Tabs -->
-      <div class="admin-tabs">
-        <button class="admin-tab-btn active" data-tab="form">📝 Formulari</button>
-        <button class="admin-tab-btn" data-tab="visual">🎮 Scoreboard Visual</button>
+      <div class="admin-save-notice" id="save-notice" style="display:none">
+        ⏳ Guardant… els canvis apareixeran en ~1 minut (el lloc es redesplega)
       </div>
 
-      <!-- FORM VIEW -->
-      <div id="form-view" class="admin-tab-content active">
-        <section class="admin-section">
-          <h2>Actualitzar Resultat</h2>
+      <section class="admin-section" id="admin-match-section">
+        <h2>Actualitzar Resultat</h2>
+
+        <!-- Tab selector -->
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="form">📝 Formulari</button>
+          <button class="admin-tab" data-tab="scoreboard">🎮 Marcador Visual</button>
+        </div>
+
+        <!-- FORM TAB -->
+        <div id="tab-form" class="tab-pane active">
           <form id="update-form" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Categoria</label>
+                <select id="f-category"><option value="">Selecciona…</option></select>
+              </div>
+              <div class="form-group">
+                <label>Divisió</label>
+                <select id="f-division"><option value="">Selecciona…</option></select>
+              </div>
+            </div>
             <div class="form-group">
-              <label>Categoria:</label>
-              <select id="form-category" required>
-                <option value="">Selecciona categoria...</option>
-              </select>
+              <label>Partit</label>
+              <select id="f-match"><option value="">Selecciona…</option></select>
             </div>
 
-            <div class="form-group">
-              <label>Divisió:</label>
-              <select id="form-division" required>
-                <option value="">Selecciona divisió...</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Partit:</label>
-              <select id="form-match" required>
-                <option value="">Selecciona partit...</option>
-              </select>
-            </div>
+            <div id="f-match-preview" class="match-preview" style="display:none"></div>
 
             <div class="form-row">
               <div class="form-group">
-                <label>Gols Local:</label>
-                <input type="number" id="form-home-score" min="0" required>
+                <label id="f-home-label">Gols Local</label>
+                <input type="number" id="f-home-score" min="0" value="0">
               </div>
               <div class="form-group">
-                <label>Gols Visitant:</label>
-                <input type="number" id="form-away-score" min="0" required>
+                <label id="f-away-label">Gols Visitant</label>
+                <input type="number" id="f-away-score" min="0" value="0">
+              </div>
+            </div>
+
+            <!-- Penalty (directa) — only shown on draw -->
+            <div id="f-penalty-section" class="penalty-section" style="display:none">
+              <div class="penalty-label">⚡ Empat — qui guanya la directa?</div>
+              <div class="penalty-options">
+                <label class="penalty-opt">
+                  <input type="radio" name="penalty" value="home">
+                  <span id="f-penalty-home">Local</span>
+                </label>
+                <label class="penalty-opt">
+                  <input type="radio" name="penalty" value="away">
+                  <span id="f-penalty-away">Visitant</span>
+                </label>
+                <label class="penalty-opt">
+                  <input type="radio" name="penalty" value="" checked>
+                  Sense directa (empat definitiu)
+                </label>
               </div>
             </div>
 
             <div class="form-group">
-              <label>
-                <input type="checkbox" id="form-played" checked>
-                Partit jugat
+              <label class="checkbox-label">
+                <input type="checkbox" id="f-played" checked>
+                Marcar com a jugat
               </label>
             </div>
 
-            <button type="submit" class="btn-primary btn-large">Guardar Resultat</button>
+            <button type="submit" class="btn-primary btn-lg">💾 Guardar Resultat</button>
           </form>
-          <p id="form-message" class="message"></p>
-        </section>
-      </div>
+          <div id="form-msg" class="msg" style="display:none"></div>
+        </div>
 
-      <!-- VISUAL SCOREBOARD VIEW -->
-      <div id="visual-view" class="admin-tab-content">
-        <section class="admin-section">
-          <h2>Scoreboard Visual</h2>
-
-          <div class="scoreboard-selector">
+        <!-- SCOREBOARD TAB -->
+        <div id="tab-scoreboard" class="tab-pane" style="display:none">
+          <div class="form-row">
             <div class="form-group">
-              <label>Categoria:</label>
-              <select id="visual-category">
-                <option value="">Selecciona categoria...</option>
-              </select>
+              <label>Categoria</label>
+              <select id="sb-category"><option value="">Selecciona…</option></select>
             </div>
-
             <div class="form-group">
-              <label>Divisió:</label>
-              <select id="visual-division">
-                <option value="">Selecciona divisió...</option>
-              </select>
+              <label>Divisió</label>
+              <select id="sb-division"><option value="">Selecciona…</option></select>
             </div>
-
             <div class="form-group">
-              <label>Partit:</label>
-              <select id="visual-match">
-                <option value="">Selecciona partit...</option>
-              </select>
+              <label>Partit</label>
+              <select id="sb-match"><option value="">Selecciona…</option></select>
             </div>
           </div>
 
-          <div id="scoreboard" class="scoreboard">
-            <p>Selecciona un partit per editar</p>
+          <div id="scoreboard-display" class="scoreboard-display">
+            <p class="sb-placeholder">Selecciona un partit per editar</p>
           </div>
-          <p id="visual-message" class="message"></p>
-        </section>
-      </div>
+          <div id="sb-msg" class="msg" style="display:none"></div>
+        </div>
+      </section>
+
+      <!-- Matches status list -->
+      <section class="admin-section">
+        <h2>Estat dels Partits</h2>
+        <div id="matches-status-list" class="matches-status-grid">
+          <!-- filled by JS -->
+        </div>
+      </section>
     </main>
-
-    <!-- Match List -->
-    <section class="admin-section matches-list-section">
-      <h2>Partits Actuals</h2>
-      <div id="matches-list" class="admin-matches-list">
-        <!-- Matches will be loaded here -->
-      </div>
-    </section>
   </div>
 
   <script src="js/admin.js"></script>

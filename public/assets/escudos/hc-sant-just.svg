@@ -1,12 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
   <defs>
-    <linearGradient id="hcsjGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00aa00;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#006600;stop-opacity:1" />
-    </linearGradient>
+    <clipPath id="sj-clip">
+      <path d="M60,6 L110,22 L110,70 Q110,100 60,114 Q10,100 10,70 L10,22 Z"/>
+    </clipPath>
   </defs>
-
-  <path d="M 50 5 L 80 30 L 80 60 Q 80 85 50 95 Q 20 85 20 60 L 20 30 Z" fill="url(#hcsjGrad)" stroke="#fff" stroke-width="1"/>
-  <text x="50" y="55" font-size="18" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">HC</text>
-  <text x="50" y="68" font-size="10" fill="white" text-anchor="middle" font-family="Arial">Sant Just</text>
+  <!-- Shield shape yellow -->
+  <path d="M60,6 L110,22 L110,70 Q110,100 60,114 Q10,100 10,70 L10,22 Z" fill="#FCCA00"/>
+  <g clip-path="url(#sj-clip)">
+    <!-- Blue top band -->
+    <rect x="0" y="0" width="120" height="38" fill="#003da5"/>
+    <!-- HC text white on blue -->
+    <text x="60" y="28" font-size="18" font-weight="900" fill="white" text-anchor="middle" font-family="Arial, sans-serif">HC</text>
+    <!-- Hockey stick on yellow area -->
+    <line x1="48" y1="50" x2="48" y2="86" stroke="#003da5" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 48 84 Q 48 96 38 96 L 32 96" stroke="#003da5" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- SANT JUST text -->
+    <text x="60" y="76" font-size="10" font-weight="800" fill="#003da5" text-anchor="middle" font-family="Arial, sans-serif">SANT JUST</text>
+  </g>
+  <!-- Border -->
+  <path d="M60,6 L110,22 L110,70 Q110,100 60,114 Q10,100 10,70 L10,22 Z" fill="none" stroke="#003da5" stroke-width="3"/>
 </svg>
