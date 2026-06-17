@@ -406,6 +406,24 @@ img { display: block; }
   flex: 1;
 }
 
+.maps-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  transition: opacity 0.15s;
+}
+
+.maps-link::after {
+  content: '↗';
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.maps-link:hover { opacity: 0.8; }
+
 .info-tree-icon {
   font-size: 16px;
   flex-shrink: 0;

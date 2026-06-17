@@ -244,7 +244,12 @@ function buildInfoSection() {
         <div class="info-tree-item">
           <span class="info-tree-icon">📍</span>
           <span class="info-tree-key">Pavelló</span>
-          <span class="info-tree-value"><strong>${t.location.name}</strong><br>${t.location.address}, ${t.location.city}</span>
+          <span class="info-tree-value">
+            <a href="https://www.google.com/maps/search/?api=1&query=Pavell%C3%B3+Municipal+d'Esports+Joan+Creus+Ripollet" target="_blank" rel="noopener" class="maps-link">
+              <strong>${t.location.name}</strong>
+            </a><br>
+            ${t.location.address}, ${t.location.city}
+          </span>
         </div>
         ${info.contacts.map(c => `
           <div class="info-tree-item">
