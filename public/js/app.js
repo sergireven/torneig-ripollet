@@ -709,6 +709,13 @@ function buildSingleMatchHTML(m) {
 }
 
 /* ===================== INSTAGRAM SECTION ===================== */
+function igLoadingHTML() {
+  return `<div class="ig-loading">
+    <div class="ig-spin"></div>
+    <span>Carregant Instagram…</span>
+  </div>`;
+}
+
 function buildInstagramSection() {
   const sec = document.createElement('div');
   sec.className = 'section';
@@ -732,20 +739,13 @@ function buildInstagramSection() {
           <p>Perfil oficial del Club Hoquei Ripollet</p>
         </div>
       </div>
-      <div class="instagram-embed-area">
+      <div class="ig-wrap" id="ig-wrap-chr">
+        ${igLoadingHTML()}
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlClub}"
           data-instgrm-version="14"
-          style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:0 auto; max-width:540px; width:100%;">
-          <div style="padding:16px;">
-            <a href="${urlClub}" target="_blank" style="color:#0033a0; font-weight:600;">
-              Veure @ch_ripollet a Instagram →
-            </a>
-          </div>
+          style="display:none;background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
         </blockquote>
-        <div class="instagram-fallback">
-          <a href="${urlClub}" target="_blank" rel="noopener">📸 Obrir Instagram del Club</a>
-        </div>
       </div>
     </div>
 
@@ -758,20 +758,13 @@ function buildInstagramSection() {
           <p>Campus d'estiu de hoquei patins · Segueix les últimes publicacions</p>
         </div>
       </div>
-      <div class="instagram-embed-area">
+      <div class="ig-wrap" id="ig-wrap-campus">
+        ${igLoadingHTML()}
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlCampus}"
           data-instgrm-version="14"
-          style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:0 auto; max-width:540px; width:100%;">
-          <div style="padding:16px;">
-            <a href="${urlCampus}" target="_blank" style="color:#0033a0; font-weight:600;">
-              Veure @okcampussergimiras a Instagram →
-            </a>
-          </div>
+          style="display:none;background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
         </blockquote>
-        <div class="instagram-fallback">
-          <a href="${urlCampus}" target="_blank" rel="noopener">📸 Obrir Instagram del Campus</a>
-        </div>
       </div>
     </div>
   `;
@@ -787,7 +780,47 @@ function buildInstagramSection() {
     window.instgrm.Embeds.process();
   }
 
+  setupIgLoading('ig-wrap-chr', urlClub);
+  setupIgLoading('ig-wrap-campus', urlCampus);
+
   return sec;
+}
+
+function setupIgLoading(wrapperId, fallbackUrl) {
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+
+  const loading = wrap.querySelector('.ig-loading');
+  const blockquote = wrap.querySelector('.instagram-media');
+
+  function onLoaded() {
+    if (loading) loading.remove();
+    if (blockquote) blockquote.style.display = '';
+  }
+
+  function onFailed() {
+    if (!loading) return;
+    loading.innerHTML = `
+      <span class="ig-load-failed">No s'ha pogut carregar Instagram</span>
+      <a href="${fallbackUrl}" target="_blank" rel="noopener" class="ig-fallback-btn">
+        Obrir a Instagram →
+      </a>
+    `;
+  }
+
+  // Watch for the iframe that embed.js injects
+  const observer = new MutationObserver(() => {
+    if (wrap.querySelector('iframe')) {
+      onLoaded();
+      observer.disconnect();
+    }
+  });
+  observer.observe(wrap, { childList: true, subtree: true });
+
+  // After 10s without iframe → show fallback link
+  setTimeout(() => {
+    if (!wrap.querySelector('iframe')) onFailed();
+  }, 10000);
 }
 
 /* ===================== OKCAT360 SECTION ===================== */
