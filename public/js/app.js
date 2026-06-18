@@ -797,7 +797,6 @@ function buildInstagramSection() {
         <a href="${urlClub}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-chr">
-        <div class="ig-placeholder"></div>
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlClub}"
           data-instgrm-version="14"
@@ -817,7 +816,6 @@ function buildInstagramSection() {
         <a href="${urlCampus}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-campus">
-        <div class="ig-placeholder"></div>
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlCampus}"
           data-instgrm-version="14"
@@ -838,27 +836,7 @@ function buildInstagramSection() {
     window.instgrm.Embeds.process();
   }
 
-  setupIgPlaceholder('ig-wrap-chr');
-  setupIgPlaceholder('ig-wrap-campus');
-
   return sec;
-}
-
-function setupIgPlaceholder(wrapperId) {
-  const wrap = document.getElementById(wrapperId);
-  if (!wrap) return;
-  const placeholder = wrap.querySelector('.ig-placeholder');
-  let elapsed = 0;
-  const poll = setInterval(() => {
-    elapsed += 500;
-    if (wrap.querySelector('iframe')) {
-      clearInterval(poll);
-      placeholder?.remove();
-    } else if (elapsed >= 15000) {
-      clearInterval(poll);
-      if (placeholder) placeholder.classList.add('ig-placeholder-timeout');
-    }
-  }, 500);
 }
 
 /* ===================== SPONSORS SECTION ===================== */

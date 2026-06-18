@@ -1122,25 +1122,6 @@ img { display: block; }
   margin-top: 4px;
 }
 
-/* Instagram placeholder */
-.ig-placeholder {
-  min-height: 220px;
-  background: #f0f0f0;
-  border-radius: 8px;
-  margin: 0 auto;
-  max-width: 540px;
-}
-
-.ig-placeholder-timeout::after {
-  content: 'No s\'ha pogut carregar';
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 220px;
-  font-size: 13px;
-  color: #aaa;
-}
 
 /* ===================== OKCAT360 SECTION ===================== */
 .okcat360-card {
