@@ -412,10 +412,10 @@ async function saveMatch(payload, msgId) {
     const data = await res.json();
 
     if (data.success) {
-      showMsg(msgId, 'success', '✓ Resultat guardat! S\'actualitzarà en ~30 segons.');
+      showMsg(msgId, 'success', '✓ Resultat guardat! La web s\'actualitzarà en ~1-2 minuts.');
       const notice = document.getElementById('save-notice');
       notice.style.display = 'block';
-      setTimeout(() => { notice.style.display = 'none'; }, 8000);
+      setTimeout(() => { notice.style.display = 'none'; }, 10000);
 
       await loadData();
       renderMatchesStatus();
