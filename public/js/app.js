@@ -765,13 +765,6 @@ function buildSingleMatchHTML(m) {
 }
 
 /* ===================== INSTAGRAM SECTION ===================== */
-function igLoadingHTML() {
-  return `<div class="ig-loading">
-    <div class="ig-spin"></div>
-    <span>Carregant Instagram…</span>
-  </div>`;
-}
-
 function buildInstagramSection() {
   const sec = document.createElement('div');
   sec.className = 'section';
@@ -797,7 +790,6 @@ function buildInstagramSection() {
         <a href="${urlClub}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-chr">
-        ${igLoadingHTML()}
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlClub}"
           data-instgrm-version="14"
@@ -817,7 +809,6 @@ function buildInstagramSection() {
         <a href="${urlCampus}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-campus">
-        ${igLoadingHTML()}
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlCampus}"
           data-instgrm-version="14"
@@ -838,43 +829,9 @@ function buildInstagramSection() {
     window.instgrm.Embeds.process();
   }
 
-  setupIgLoading('ig-wrap-chr', urlClub);
-  setupIgLoading('ig-wrap-campus', urlCampus);
-
   return sec;
 }
 
-function setupIgLoading(wrapperId, fallbackUrl) {
-  const wrap = document.getElementById(wrapperId);
-  if (!wrap) return;
-
-  const loading = wrap.querySelector('.ig-loading');
-
-  function onLoaded() { loading?.remove(); }
-
-  function onFailed() {
-    if (!loading) return;
-    loading.innerHTML = `
-      <span class="ig-load-failed">No s'ha pogut carregar Instagram</span>
-      <a href="${fallbackUrl}" target="_blank" rel="noopener" class="ig-fallback-btn">
-        Obrir a Instagram →
-      </a>
-    `;
-  }
-
-  // Poll every 500ms; give up after 10s
-  let elapsed = 0;
-  const poll = setInterval(() => {
-    elapsed += 500;
-    if (wrap.querySelector('iframe')) {
-      clearInterval(poll);
-      onLoaded();
-    } else if (elapsed >= 10000) {
-      clearInterval(poll);
-      onFailed();
-    }
-  }, 500);
-}
 
 /* ===================== OKCAT360 SECTION ===================== */
 function buildOkCat360Section() {
