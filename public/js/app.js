@@ -158,7 +158,7 @@ function buildBottomNav() {
       icon: '📸', label: 'Instagram', id: 'sec-campus',
       children: [
         { icon: '🔵', label: '@ch_ripollet',       id: 'sec-campus', anchor: 'ig-chr' },
-        { icon: '🎽', label: 'OK Campus S. Miras', id: 'sec-campus', anchor: 'ig-campus' },
+        { icon: '🎽', label: 'OK Campus Sergi Miras', id: 'sec-campus', anchor: 'ig-campus' },
       ]
     },
     { icon: '📊', label: 'Temporada', id: 'sec-temporada' },
