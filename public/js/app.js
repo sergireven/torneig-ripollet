@@ -1,5 +1,10 @@
 'use strict';
 
+const SHIELD_EXT = { chr: 'gif' };
+function shieldSrc(key) {
+  return `assets/escudos/${key}.${SHIELD_EXT[key] || 'png'}`;
+}
+
 let DATA = null;
 
 document.addEventListener('DOMContentLoaded', init);
@@ -558,7 +563,7 @@ function buildStandingsHTML(standings) {
         <td>
           <div class="team-cell">
             <div class="rank-badge">${rank}</div>
-            <img src="assets/escudos/${team.key}.svg" alt="${team.name}" class="team-shield-sm"
+            <img src="${shieldSrc(team.key)}" alt="${team.name}" class="team-shield-sm"
                  onerror="this.style.opacity=0.3">
             <span class="team-name">${team.name} ${trophy}</span>
           </div>
@@ -637,14 +642,14 @@ function buildMatchCardHTML(m) {
         <span class="match-team-name ${homeWinner ? 'is-winner' : ''}">
           ${homeWinner ? '<span class="winner-indicator">🏆 </span>' : ''}${m.home}
         </span>
-        <img src="assets/escudos/${m.homeKey}.svg" alt="${m.home}" class="match-shield-md"
+        <img src="${shieldSrc(m.homeKey)}" alt="${m.home}" class="match-shield-md"
              onerror="this.style.opacity=0.3">
       </div>
 
       <div class="match-score-col">${scoreHTML}</div>
 
       <div class="match-team away">
-        <img src="assets/escudos/${m.awayKey}.svg" alt="${m.away}" class="match-shield-md"
+        <img src="${shieldSrc(m.awayKey)}" alt="${m.away}" class="match-shield-md"
              onerror="this.style.opacity=0.3">
         <span class="match-team-name ${awayWinner ? 'is-winner' : ''}">
           ${m.away}${awayWinner ? ' <span class="winner-indicator">🏆</span>' : ''}
@@ -686,7 +691,7 @@ function buildSingleMatchHTML(m) {
       </div>
       <div class="single-match-body">
         <div class="single-team">
-          <img src="assets/escudos/${m.homeKey}.svg" alt="${m.home}" class="single-team-shield"
+          <img src="${shieldSrc(m.homeKey)}" alt="${m.home}" class="single-team-shield"
                onerror="this.style.opacity=0.3">
           <div class="single-team-name">${m.home}</div>
           <div class="single-team-winner-badge ${homeWinner ? 'visible' : ''}">🏆 Guanyador</div>
@@ -698,7 +703,7 @@ function buildSingleMatchHTML(m) {
         </div>
 
         <div class="single-team">
-          <img src="assets/escudos/${m.awayKey}.svg" alt="${m.away}" class="single-team-shield"
+          <img src="${shieldSrc(m.awayKey)}" alt="${m.away}" class="single-team-shield"
                onerror="this.style.opacity=0.3">
           <div class="single-team-name">${m.away}</div>
           <div class="single-team-winner-badge ${awayWinner ? 'visible' : ''}">🏆 Guanyador</div>

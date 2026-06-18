@@ -1,5 +1,10 @@
 /* Admin panel — CH Ripollet Torneig 2026 */
 
+const SHIELD_EXT = { chr: 'gif' };
+function shieldSrc(key) {
+  return `assets/escudos/${key}.${SHIELD_EXT[key] || 'png'}`;
+}
+
 let tournamentData = null;
 let authToken = null;
 let sbMatchId = null;
@@ -179,7 +184,7 @@ function renderScoreboard(match) {
     <div class="sb-teams">
       <div class="sb-team" id="sb-team-home">
         <div class="sb-winner-crown" id="sb-crown-home">👑</div>
-        <img src="assets/escudos/${match.homeKey}.svg" alt="${match.home}" onerror="this.remove()">
+        <img src="${shieldSrc(match.homeKey)}" alt="${match.home}" onerror="this.remove()">
         <div class="sb-team-name">${match.home}</div>
         <div class="sb-score-area">
           <div class="sb-score-btns">
@@ -192,7 +197,7 @@ function renderScoreboard(match) {
       <div><div class="sb-vs">VS</div></div>
       <div class="sb-team" id="sb-team-away">
         <div class="sb-winner-crown" id="sb-crown-away">👑</div>
-        <img src="assets/escudos/${match.awayKey}.svg" alt="${match.away}" onerror="this.remove()">
+        <img src="${shieldSrc(match.awayKey)}" alt="${match.away}" onerror="this.remove()">
         <div class="sb-team-name">${match.away}</div>
         <div class="sb-score-area">
           <div class="sb-score-btns">
