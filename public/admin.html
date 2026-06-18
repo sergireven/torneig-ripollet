@@ -52,98 +52,25 @@
       <section class="admin-section" id="admin-match-section">
         <h2>Actualitzar Resultat</h2>
 
-        <!-- Tab selector -->
-        <div class="admin-tabs">
-          <button class="admin-tab active" data-tab="form">📝 Formulari</button>
-          <button class="admin-tab" data-tab="scoreboard">🎮 Marcador Visual</button>
-        </div>
-
-        <!-- FORM TAB -->
-        <div id="tab-form" class="tab-pane active">
-          <form id="update-form" class="admin-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Categoria</label>
-                <select id="f-category"><option value="">Selecciona…</option></select>
-              </div>
-              <div class="form-group">
-                <label>Divisió</label>
-                <select id="f-division"><option value="">Selecciona…</option></select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Partit</label>
-              <select id="f-match"><option value="">Selecciona…</option></select>
-            </div>
-
-            <div id="f-match-preview" class="match-preview" style="display:none"></div>
-            <div id="f-match-status" style="display:none"></div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label id="f-home-label">Gols Local</label>
-                <input type="number" id="f-home-score" min="0" value="0">
-              </div>
-              <div class="form-group">
-                <label id="f-away-label">Gols Visitant</label>
-                <input type="number" id="f-away-score" min="0" value="0">
-              </div>
-            </div>
-
-            <!-- Penalty (directa) — only shown on draw -->
-            <div id="f-penalty-section" class="penalty-section" style="display:none">
-              <div class="penalty-label">⚡ Empat — Resultat de les directes</div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label id="f-penalty-home-lbl">Gols directa Local</label>
-                  <input type="number" id="f-penalty-home-score" min="0" value="0">
-                </div>
-                <div class="form-group">
-                  <label id="f-penalty-away-lbl">Gols directa Visitant</label>
-                  <input type="number" id="f-penalty-away-score" min="0" value="0">
-                </div>
-              </div>
-              <label class="checkbox-label" style="margin-top:0.6rem">
-                <input type="checkbox" id="f-no-penalty">
-                Sense directa (empat definitiu)
-              </label>
-            </div>
-
-            <div class="form-group">
-              <label class="checkbox-label">
-                <input type="checkbox" id="f-played" checked>
-                Jugat
-              </label>
-            </div>
-
-            <button type="submit" class="btn-primary btn-lg">💾 Guardar Resultat</button>
-            <button type="button" id="f-reset-btn" class="btn-reset" style="display:none">🗑️ Esborrar resultat</button>
-          </form>
-          <div id="form-msg" class="msg" style="display:none"></div>
-        </div>
-
-        <!-- SCOREBOARD TAB -->
-        <div id="tab-scoreboard" class="tab-pane">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Categoria</label>
-              <select id="sb-category"><option value="">Selecciona…</option></select>
-            </div>
-            <div class="form-group">
-              <label>Divisió</label>
-              <select id="sb-division"><option value="">Selecciona…</option></select>
-            </div>
-            <div class="form-group">
-              <label>Partit</label>
-              <select id="sb-match"><option value="">Selecciona…</option></select>
-            </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoria</label>
+            <select id="sb-category"><option value="">Selecciona…</option></select>
           </div>
-
-          <div id="scoreboard-display" class="scoreboard-display">
-            <p class="sb-placeholder">Selecciona un partit per editar</p>
+          <div class="form-group">
+            <label>Divisió</label>
+            <select id="sb-division"><option value="">Selecciona…</option></select>
           </div>
-          <div id="sb-msg" class="msg" style="display:none"></div>
+          <div class="form-group">
+            <label>Partit</label>
+            <select id="sb-match"><option value="">Selecciona…</option></select>
+          </div>
         </div>
+
+        <div id="scoreboard-display" class="scoreboard-display">
+          <p class="sb-placeholder">Selecciona un partit per editar</p>
+        </div>
+        <div id="sb-msg" class="msg" style="display:none"></div>
       </section>
 
       <!-- Matches status list -->

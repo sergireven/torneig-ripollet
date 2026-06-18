@@ -200,33 +200,6 @@
   letter-spacing: 0.08em;
 }
 
-/* ─── Tabs ─── */
-.admin-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-
-.admin-tab {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: transparent;
-  color: rgba(255,255,255,0.55);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.admin-tab.active {
-  background: var(--accent);
-  color: var(--primary-dark);
-  border-color: var(--accent);
-}
-
-.tab-pane { display: none; }
-.tab-pane.active { display: block; }
 
 /* ─── Form ─── */
 .admin-form {
@@ -563,6 +536,37 @@
   background: var(--accent);
   color: var(--primary-dark);
   border-color: var(--accent);
+}
+
+/* ─── Winner highlight ─── */
+.sb-winner-crown {
+  font-size: 1.3rem;
+  height: 1.6rem;
+  line-height: 1.6rem;
+  visibility: hidden;
+  transition: visibility 0s;
+}
+
+.sb-team.sb-winner .sb-team-name {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.sb-team.sb-winner .sb-score-val {
+  color: var(--accent);
+}
+
+.sb-team.sb-loser {
+  opacity: 0.45;
+}
+
+/* ─── Scoreboard footer (status + buttons) ─── */
+.sb-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.25rem;
 }
 
 .sb-save-btn {
