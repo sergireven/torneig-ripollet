@@ -794,6 +794,7 @@ function buildInstagramSection() {
           <h3>@ch_ripollet</h3>
           <p>Perfil oficial del Club Hoquei Ripollet</p>
         </div>
+        <a href="${urlClub}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-chr">
         ${igLoadingHTML()}
@@ -813,6 +814,7 @@ function buildInstagramSection() {
           <h3>OK Campus Sergi Miras</h3>
           <p>Campus d'estiu de hoquei patins · Segueix les últimes publicacions</p>
         </div>
+        <a href="${urlCampus}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-campus">
         ${igLoadingHTML()}
