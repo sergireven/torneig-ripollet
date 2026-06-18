@@ -1217,6 +1217,10 @@ img { display: block; }
 }
 
 /* ===================== RESPONSIVE ===================== */
+/* Bottom nav + sheet: mobile-only, hidden by default */
+.bottom-nav { display: none; }
+.bottom-sheet { display: none; }
+
 @media (max-width: 900px) {
   :root { --sidebar-w: 240px; }
 
@@ -1337,6 +1341,7 @@ img { display: block; }
 
   /* ── Bottom sheet ── */
   .bottom-sheet {
+    display: block;
     position: fixed;
     bottom: 62px; left: 0; right: 0;
     background: var(--primary-dark);
