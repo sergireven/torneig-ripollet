@@ -790,10 +790,11 @@ function buildInstagramSection() {
         <a href="${urlClub}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-chr">
+        <div class="ig-placeholder"></div>
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlClub}"
           data-instgrm-version="14"
-          style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
+          style="display:none;background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
         </blockquote>
       </div>
     </div>
@@ -809,10 +810,11 @@ function buildInstagramSection() {
         <a href="${urlCampus}" target="_blank" rel="noopener" class="ig-open-btn">Obrir →</a>
       </div>
       <div class="ig-wrap" id="ig-wrap-campus">
+        <div class="ig-placeholder"></div>
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlCampus}"
           data-instgrm-version="14"
-          style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
+          style="display:none;background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
         </blockquote>
       </div>
     </div>
@@ -829,9 +831,28 @@ function buildInstagramSection() {
     window.instgrm.Embeds.process();
   }
 
+  setupIgPlaceholder('ig-wrap-chr');
+  setupIgPlaceholder('ig-wrap-campus');
+
   return sec;
 }
 
+function setupIgPlaceholder(wrapperId) {
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+  const placeholder = wrap.querySelector('.ig-placeholder');
+  let elapsed = 0;
+  const poll = setInterval(() => {
+    elapsed += 500;
+    if (wrap.querySelector('iframe')) {
+      clearInterval(poll);
+      placeholder?.remove();
+    } else if (elapsed >= 15000) {
+      clearInterval(poll);
+      if (placeholder) placeholder.classList.add('ig-placeholder-timeout');
+    }
+  }, 500);
+}
 
 /* ===================== OKCAT360 SECTION ===================== */
 function buildOkCat360Section() {
