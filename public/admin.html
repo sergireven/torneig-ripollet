@@ -91,21 +91,21 @@
 
             <!-- Penalty (directa) — only shown on draw -->
             <div id="f-penalty-section" class="penalty-section" style="display:none">
-              <div class="penalty-label">⚡ Empat — qui guanya la directa?</div>
-              <div class="penalty-options">
-                <label class="penalty-opt">
-                  <input type="radio" name="penalty" value="home">
-                  <span id="f-penalty-home">Local</span>
-                </label>
-                <label class="penalty-opt">
-                  <input type="radio" name="penalty" value="away">
-                  <span id="f-penalty-away">Visitant</span>
-                </label>
-                <label class="penalty-opt">
-                  <input type="radio" name="penalty" value="" checked>
-                  Sense directa (empat definitiu)
-                </label>
+              <div class="penalty-label">⚡ Empat — Resultat de les directes</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label id="f-penalty-home-lbl">Gols directa Local</label>
+                  <input type="number" id="f-penalty-home-score" min="0" value="0">
+                </div>
+                <div class="form-group">
+                  <label id="f-penalty-away-lbl">Gols directa Visitant</label>
+                  <input type="number" id="f-penalty-away-score" min="0" value="0">
+                </div>
               </div>
+              <label class="checkbox-label" style="margin-top:0.6rem">
+                <input type="checkbox" id="f-no-penalty">
+                Sense directa (empat definitiu)
+              </label>
             </div>
 
             <div class="form-group">

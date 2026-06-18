@@ -70,7 +70,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server not configured (missing env vars)' });
   }
 
-  const { password, matchId, homeScore, awayScore, played, penaltyWinner } = req.body || {};
+  const { password, matchId, homeScore, awayScore, played, penaltyHomeScore, penaltyAwayScore } = req.body || {};
 
   // Auth
   if (!ADMIN_PASSWORD || password !== ADMIN_PASSWORD) {
@@ -93,12 +93,22 @@ export default async function handler(req, res) {
       for (const div of cat.divisions) {
         for (const m of div.matches) {
           if (m.id === matchId) {
-            m.homeScore    = typeof homeScore === 'number' ? homeScore : parseInt(homeScore, 10) || 0;
-            m.awayScore    = typeof awayScore === 'number' ? awayScore : parseInt(awayScore, 10) || 0;
-            m.played       = played !== undefined ? Boolean(played) : true;
-            // penaltyWinner: "home" | "away" | null
-            m.penaltyWinner = (m.homeScore !== m.awayScore) ? null
-                              : (penaltyWinner || null);
+            m.homeScore = typeof homeScore === 'number' ? homeScore : parseInt(homeScore, 10) || 0;
+            m.awayScore = typeof awayScore === 'number' ? awayScore : parseInt(awayScore, 10) || 0;
+            m.played    = played !== undefined ? Boolean(played) : true;
+
+            const isDraw = m.homeScore === m.awayScore;
+            m.penaltyHomeScore = isDraw && penaltyHomeScore !== null && penaltyHomeScore !== undefined
+              ? (typeof penaltyHomeScore === 'number' ? penaltyHomeScore : parseInt(penaltyHomeScore, 10) || 0)
+              : null;
+            m.penaltyAwayScore = isDraw && penaltyAwayScore !== null && penaltyAwayScore !== undefined
+              ? (typeof penaltyAwayScore === 'number' ? penaltyAwayScore : parseInt(penaltyAwayScore, 10) || 0)
+              : null;
+            // derive penaltyWinner from scores
+            m.penaltyWinner = (!isDraw || m.penaltyHomeScore === null) ? null
+              : m.penaltyHomeScore > m.penaltyAwayScore ? 'home'
+              : m.penaltyAwayScore > m.penaltyHomeScore ? 'away'
+              : null;
             found = true;
             break;
           }

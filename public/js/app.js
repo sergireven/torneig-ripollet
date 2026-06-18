@@ -150,6 +150,11 @@ function buildBottomNav() {
       ]
     },
     { icon: '📊', label: 'Temporada', id: 'sec-temporada' },
+    { icon: '⚙️', label: 'Admin', id: null, href: 'admin.html',
+      children: [
+        { icon: '🔧', label: 'Panell d\'administrador', href: 'admin.html' },
+      ]
+    },
   ];
 
   // Build tab buttons
@@ -163,21 +168,17 @@ function buildBottomNav() {
   let activeIdx = -1;
 
   function openSheet(tab, idx) {
-    sheetItems.innerHTML = `
-      ${tab.children.map(c => `
-        <button class="bs-item"
-          data-section="${c.id}"
-          ${c.anchor ? `data-anchor="${c.anchor}"` : ''}>
-          <span class="bs-item-icon">${c.icon}</span>
-          ${c.label}
-        </button>
-      `).join('')}
-      <div class="bs-divider"></div>
-      <a class="bs-item bs-admin" href="admin.html">
-        <span class="bs-item-icon">🔧</span>
-        Administrador
-      </a>
-    `;
+    sheetItems.innerHTML = tab.children.map(c => {
+      if (c.href) {
+        return `<a class="bs-item" href="${c.href}">
+          <span class="bs-item-icon">${c.icon}</span>${c.label}</a>`;
+      }
+      return `<button class="bs-item"
+        data-section="${c.id}"
+        ${c.anchor ? `data-anchor="${c.anchor}"` : ''}>
+        <span class="bs-item-icon">${c.icon}</span>${c.label}
+      </button>`;
+    }).join('');
     sheet.classList.add('open');
     overlay.classList.add('open');
 
@@ -584,7 +585,9 @@ function buildMatchCardHTML(m) {
   } else {
     let penLabel = '';
     if (draw && m.penaltyWinner) {
-      penLabel = `<span class="match-penalty-label">${m.penaltyWinner === 'home' ? m.home.split(' ')[0] : m.away.split(' ')[0]} guanya directa</span>`;
+      const ps = (m.penaltyHomeScore !== null && m.penaltyAwayScore !== null)
+        ? ` ${m.penaltyHomeScore}-${m.penaltyAwayScore}` : '';
+      penLabel = `<span class="match-penalty-label">D${ps}</span>`;
     }
     scoreHTML = `<span class="match-score">${m.homeScore} - ${m.awayScore}</span>${penLabel}`;
   }
@@ -639,7 +642,9 @@ function buildSingleMatchHTML(m) {
   let penLabel = '';
   if (draw && m.penaltyWinner) {
     const winner = m.penaltyWinner === 'home' ? m.home : m.away;
-    penLabel = `<div class="single-score-penalty">${winner} guanya la directa</div>`;
+    const ps = (m.penaltyHomeScore !== null && m.penaltyAwayScore !== null)
+      ? ` (${m.penaltyHomeScore}-${m.penaltyAwayScore})` : '';
+    penLabel = `<div class="single-score-penalty">Directa${ps} · ${winner}</div>`;
   }
 
   return `

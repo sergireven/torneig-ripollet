@@ -5,7 +5,8 @@ let authToken = null;
 let sbMatchId = null;
 let sbHome = 0;
 let sbAway = 0;
-let sbPenalty = '';
+let sbPenaltyHome = null;
+let sbPenaltyAway = null;
 
 // ─── Init ────────────────────────────────────────────────────────────────────
 
@@ -233,28 +234,26 @@ function showFormPreview(match) {
       <span>${match.away}</span>
     </div>
   `;
-
-  // Update penalty team labels
-  document.getElementById('f-penalty-home').textContent = match.home;
-  document.getElementById('f-penalty-away').textContent = match.away;
+  document.getElementById('f-penalty-home-lbl').textContent = `Directa ${match.home}`;
+  document.getElementById('f-penalty-away-lbl').textContent = `Directa ${match.away}`;
 }
 
 function hideFormPreview() {
   document.getElementById('f-match-preview').style.display = 'none';
   document.getElementById('f-penalty-section').style.display = 'none';
-  document.querySelector('input[name="penalty"][value=""]').checked = true;
+  document.getElementById('f-penalty-home-score').value = 0;
+  document.getElementById('f-penalty-away-score').value = 0;
+  document.getElementById('f-no-penalty').checked = false;
 }
 
 function setFormScores(match) {
   document.getElementById('f-home-score').value = match.homeScore;
   document.getElementById('f-away-score').value = match.awayScore;
   document.getElementById('f-played').checked = match.played;
-
-  // Set penalty radio
-  const pw = match.penaltyWinner || '';
-  const radio = document.querySelector(`input[name="penalty"][value="${pw}"]`);
-  if (radio) radio.checked = true;
-
+  document.getElementById('f-penalty-home-score').value = match.penaltyHomeScore ?? 0;
+  document.getElementById('f-penalty-away-score').value = match.penaltyAwayScore ?? 0;
+  document.getElementById('f-no-penalty').checked =
+    match.homeScore === match.awayScore && !match.penaltyWinner;
   checkPenaltyVisibility();
 }
 
@@ -262,12 +261,13 @@ function checkPenaltyVisibility() {
   const h = parseInt(document.getElementById('f-home-score').value) || 0;
   const a = parseInt(document.getElementById('f-away-score').value) || 0;
   const section = document.getElementById('f-penalty-section');
-
   if (h === a) {
     section.style.display = 'block';
   } else {
     section.style.display = 'none';
-    document.querySelector('input[name="penalty"][value=""]').checked = true;
+    document.getElementById('f-penalty-home-score').value = 0;
+    document.getElementById('f-penalty-away-score').value = 0;
+    document.getElementById('f-no-penalty').checked = false;
   }
 }
 
@@ -284,14 +284,14 @@ async function submitFormUpdate() {
   const awayScore = parseInt(document.getElementById('f-away-score').value) || 0;
   const played = document.getElementById('f-played').checked;
 
-  let penaltyWinner = null;
-  if (homeScore === awayScore) {
-    const radio = document.querySelector('input[name="penalty"]:checked');
-    penaltyWinner = radio?.value || null;
-    if (penaltyWinner === '') penaltyWinner = null;
+  let penaltyHomeScore = null;
+  let penaltyAwayScore = null;
+  if (homeScore === awayScore && !document.getElementById('f-no-penalty').checked) {
+    penaltyHomeScore = parseInt(document.getElementById('f-penalty-home-score').value) || 0;
+    penaltyAwayScore = parseInt(document.getElementById('f-penalty-away-score').value) || 0;
   }
 
-  await saveMatch({ matchId, homeScore, awayScore, played, penaltyWinner }, 'form-msg');
+  await saveMatch({ matchId, homeScore, awayScore, played, penaltyHomeScore, penaltyAwayScore }, 'form-msg');
 }
 
 // ─── Scoreboard ───────────────────────────────────────────────────────────────
@@ -300,8 +300,10 @@ function renderScoreboard(match) {
   sbMatchId = match.id;
   sbHome = match.homeScore;
   sbAway = match.awayScore;
-  sbPenalty = match.penaltyWinner || '';
+  sbPenaltyHome = match.penaltyHomeScore ?? null;
+  sbPenaltyAway = match.penaltyAwayScore ?? null;
 
+  const isDraw = match.homeScore === match.awayScore;
   const container = document.getElementById('scoreboard-display');
   container.innerHTML = `
     <div class="sb-teams">
@@ -316,11 +318,7 @@ function renderScoreboard(match) {
           </div>
         </div>
       </div>
-
-      <div>
-        <div class="sb-vs">VS</div>
-      </div>
-
+      <div><div class="sb-vs">VS</div></div>
       <div class="sb-team">
         <img src="assets/escudos/${match.awayKey}.svg" alt="${match.away}" onerror="this.remove()">
         <div class="sb-team-name">${match.away}</div>
@@ -334,16 +332,29 @@ function renderScoreboard(match) {
       </div>
     </div>
 
-    <div id="sb-penalty-area" class="sb-penalty" style="display:${match.homeScore === match.awayScore ? 'block' : 'none'}">
-      <div class="sb-penalty-label">⚡ Empat — qui guanya la directa?</div>
-      <div class="sb-penalty-btns">
-        <button class="sb-penalty-btn ${match.penaltyWinner === 'home' ? 'active' : ''}"
-          onclick="sbSetPenalty('home','${match.home}')">${match.home}</button>
-        <button class="sb-penalty-btn ${!match.penaltyWinner ? 'active' : ''}"
-          onclick="sbSetPenalty('','')">Empat definitiu</button>
-        <button class="sb-penalty-btn ${match.penaltyWinner === 'away' ? 'active' : ''}"
-          onclick="sbSetPenalty('away','${match.away}')">${match.away}</button>
+    <div id="sb-penalty-area" class="sb-penalty" style="display:${isDraw ? 'block' : 'none'}">
+      <div class="sb-penalty-label">⚡ Empat — Resultat directa</div>
+      <div class="form-row" style="margin-top:0.5rem">
+        <div class="form-group">
+          <label style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase">
+            ${match.home}
+          </label>
+          <input type="number" id="sb-pen-home" min="0" value="${match.penaltyHomeScore ?? 0}"
+            oninput="sbPenaltyHome=+this.value" style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%">
+        </div>
+        <div class="form-group">
+          <label style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase">
+            ${match.away}
+          </label>
+          <input type="number" id="sb-pen-away" min="0" value="${match.penaltyAwayScore ?? 0}"
+            oninput="sbPenaltyAway=+this.value" style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%">
+        </div>
       </div>
+      <label class="checkbox-label" style="margin-top:0.6rem">
+        <input type="checkbox" id="sb-no-penalty" ${!match.penaltyWinner && isDraw ? 'checked' : ''}
+          onchange="if(this.checked){sbPenaltyHome=null;sbPenaltyAway=null}">
+        Sense directa (empat definitiu)
+      </label>
     </div>
 
     <button class="sb-save-btn" onclick="sbSave()">💾 Guardar Resultat</button>
@@ -361,32 +372,25 @@ window.sbAdjust = function(side, delta) {
   updateSbPenaltyVisibility();
 };
 
-window.sbSetPenalty = function(val) {
-  sbPenalty = val;
-  document.querySelectorAll('.sb-penalty-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-};
-
 function updateSbPenaltyVisibility() {
   const area = document.getElementById('sb-penalty-area');
   if (!area) return;
-  if (sbHome === sbAway) {
-    area.style.display = 'block';
-  } else {
-    area.style.display = 'none';
-    sbPenalty = '';
-  }
+  area.style.display = sbHome === sbAway ? 'block' : 'none';
+  if (sbHome !== sbAway) { sbPenaltyHome = null; sbPenaltyAway = null; }
 }
 
 window.sbSave = async function() {
   if (!sbMatchId) return;
-  const penaltyWinner = (sbHome === sbAway && sbPenalty) ? sbPenalty : null;
+  const noPen = document.getElementById('sb-no-penalty')?.checked;
+  const penaltyHomeScore = (sbHome === sbAway && !noPen) ? (sbPenaltyHome ?? 0) : null;
+  const penaltyAwayScore = (sbHome === sbAway && !noPen) ? (sbPenaltyAway ?? 0) : null;
   await saveMatch({
     matchId: sbMatchId,
     homeScore: sbHome,
     awayScore: sbAway,
     played: true,
-    penaltyWinner
+    penaltyHomeScore,
+    penaltyAwayScore
   }, 'sb-msg');
 };
 
