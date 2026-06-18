@@ -7,7 +7,7 @@
       "address": "Rambla dels Pinetons s/n, cantonada Carrer Pizarro",
       "city": "Ripollet"
     },
-    "updatedAt": "2026-06-18T12:40:05.301Z"
+    "updatedAt": "2026-06-18T13:11:32.947Z"
   },
   "info": {
     "welcome": "Benvingudes i benvinguts al 1r Torneig Base d'Estiu CH Ripollet. Per al Club Hoquei Ripollet és un orgull poder celebrar aquesta primera edició d'un torneig pensat especialment per als més petits i petites de la nostra família esportiva. Volem que aquesta jornada sigui una oportunitat per gaudir del hoquei patins, compartir experiències amb altres clubs i continuar fomentant els valors que donen sentit a l'esport de base.",
@@ -145,7 +145,7 @@
     {
       "id": "prebenjami",
       "name": "Prebenjamí",
-      "awardTime": "13:00",
+      "awardTime": "13:05",
       "divisions": [
         {
           "id": "prebe-or",
@@ -154,7 +154,7 @@
           "matches": [
             {
               "id": "prebe-or-1",
-              "time": "11:30",
+              "time": "11:35",
               "home": "CH Ripollet A",
               "homeKey": "chr",
               "away": "CH Sta Perpètua A",
@@ -175,7 +175,7 @@
           "matches": [
             {
               "id": "prebe-plata-1",
-              "time": "10:10",
+              "time": "10:15",
               "home": "CH Ripollet B",
               "homeKey": "chr",
               "away": "CH Ripollet C",
@@ -196,7 +196,7 @@
           "matches": [
             {
               "id": "prebe-iniciacio-1",
-              "time": "09:30",
+              "time": "09:35",
               "home": "CH Ripollet D",
               "homeKey": "chr",
               "away": "PHC Sant Cugat G",
@@ -210,7 +210,7 @@
             },
             {
               "id": "prebe-iniciacio-2",
-              "time": "10:50",
+              "time": "10:55",
               "home": "PHC Sant Cugat G",
               "homeKey": "phc-sant-cugat",
               "away": "HC Sentmenat",
@@ -224,7 +224,7 @@
             },
             {
               "id": "prebe-iniciacio-3",
-              "time": "12:10",
+              "time": "12:15",
               "home": "CH Ripollet D",
               "homeKey": "chr",
               "away": "HC Sentmenat",
@@ -243,7 +243,7 @@
     {
       "id": "benjami",
       "name": "Benjamí",
-      "awardTime": "19:30",
+      "awardTime": "19:35",
       "divisions": [
         {
           "id": "benjami-or",
@@ -252,7 +252,7 @@
           "matches": [
             {
               "id": "benjami-or-1",
-              "time": "16:10",
+              "time": "16:15",
               "home": "CH Ripollet A",
               "homeKey": "chr",
               "away": "PHC Sant Cugat B",
@@ -266,7 +266,7 @@
             },
             {
               "id": "benjami-or-2",
-              "time": "17:30",
+              "time": "17:35",
               "home": "HC Sant Just B",
               "homeKey": "hc-sant-just",
               "away": "PHC Sant Cugat B",
@@ -280,7 +280,7 @@
             },
             {
               "id": "benjami-or-3",
-              "time": "18:50",
+              "time": "18:55",
               "home": "CH Ripollet A",
               "homeKey": "chr",
               "away": "HC Sant Just B",
@@ -301,7 +301,7 @@
           "matches": [
             {
               "id": "benjami-plata-1",
-              "time": "15:30",
+              "time": "15:35",
               "home": "CH Ripollet B",
               "homeKey": "chr",
               "away": "HC Sentmenat",
@@ -315,7 +315,7 @@
             },
             {
               "id": "benjami-plata-2",
-              "time": "16:50",
+              "time": "16:55",
               "home": "HC Sentmenat",
               "homeKey": "hc-sentmenat",
               "away": "CH Sta Perpètua A",
@@ -329,7 +329,7 @@
             },
             {
               "id": "benjami-plata-3",
-              "time": "18:10",
+              "time": "18:15",
               "home": "CH Ripollet B",
               "homeKey": "chr",
               "away": "CH Sta Perpètua A",
