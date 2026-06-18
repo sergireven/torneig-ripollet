@@ -171,7 +171,7 @@ function buildBottomNav() {
       ]
     },
     { icon: '📊', label: 'Temporada', id: 'sec-temporada' },
-    { icon: '🤝', label: 'Sponsors', id: 'sec-sponsors' },
+    { icon: '🤝', label: 'Patrocinadors', id: 'sec-sponsors' },
     { icon: '⚙️', label: 'Admin', id: null, href: 'admin.html',
       children: [
         { icon: '🔧', label: 'Panell d\'administrador', href: 'admin.html' },
