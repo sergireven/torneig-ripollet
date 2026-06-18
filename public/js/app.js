@@ -105,15 +105,13 @@ function buildSidebar() {
     btn.nextElementSibling.classList.add('open');
   });
 
-  // Expand subgroups
+  // Subgroups: collapsed by default
   nav.querySelectorAll('.nav-subgroup-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const children = btn.nextElementSibling;
       btn.classList.toggle('open');
       children.classList.toggle('open');
     });
-    btn.classList.add('open');
-    btn.nextElementSibling.classList.add('open');
   });
 
   // Nav item clicks
