@@ -14,6 +14,17 @@
 const GITHUB_API = 'https://api.github.com';
 const FILE_PATH = 'public/data.json';
 
+function timeToMins(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function minsToTime(mins) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 async function ghGet(repo, branch, token) {
   const url = `${GITHUB_API}/repos/${repo}/contents/${FILE_PATH}?ref=${branch}`;
   const res = await fetch(url, {
@@ -70,13 +81,78 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server not configured (missing env vars)' });
   }
 
-  const { password, matchId, homeScore, awayScore, played, penaltyHomeScore, penaltyAwayScore } = req.body || {};
+  const {
+    password, action,
+    matchId, homeScore, awayScore, played, penaltyHomeScore, penaltyAwayScore,
+    newTime, cascade,
+  } = req.body || {};
 
   // Auth
   if (!ADMIN_PASSWORD || password !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Contrasenya incorrecta' });
   }
 
+  // ── Adjust schedule (shift all events from a match onwards) ──────────────
+  if (action === 'adjustSchedule') {
+    if (!matchId || !newTime) {
+      return res.status(400).json({ error: 'matchId and newTime required' });
+    }
+    try {
+      const file = await ghGet(GITHUB_REPO, GITHUB_BRANCH, GITHUB_TOKEN);
+      const raw = Buffer.from(file.content, 'base64').toString('utf-8');
+      const data = JSON.parse(raw);
+
+      let originalTime = null;
+      for (const cat of data.categories) {
+        for (const div of cat.divisions) {
+          for (const m of div.matches) {
+            if (m.id === matchId) {
+              originalTime = m.time;
+              m.time = newTime;
+              break;
+            }
+          }
+          if (originalTime) break;
+        }
+        if (originalTime) break;
+      }
+
+      if (!originalTime) {
+        return res.status(404).json({ error: `Partit "${matchId}" no trobat` });
+      }
+
+      if (cascade) {
+        const origMins = timeToMins(originalTime);
+        const delta = timeToMins(newTime) - origMins;
+
+        for (const cat of data.categories) {
+          for (const div of cat.divisions) {
+            for (const m of div.matches) {
+              if (m.id !== matchId && timeToMins(m.time) > origMins) {
+                m.time = minsToTime(timeToMins(m.time) + delta);
+              }
+            }
+          }
+          if (cat.awardTime && timeToMins(cat.awardTime) > origMins) {
+            cat.awardTime = minsToTime(timeToMins(cat.awardTime) + delta);
+          }
+        }
+      }
+
+      data.tournament.updatedAt = new Date().toISOString();
+      const newContent = JSON.stringify(data, null, 2);
+      await ghPut(
+        GITHUB_REPO, GITHUB_BRANCH, GITHUB_TOKEN, file.sha, newContent,
+        `feat: adjust schedule from ${matchId} (${originalTime}→${newTime})${cascade ? ', cascade' : ''} [skip ci]`
+      );
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error('adjustSchedule error:', err);
+      return res.status(500).json({ error: err.message || 'Internal error' });
+    }
+  }
+
+  // ── Default: update match result ─────────────────────────────────────────
   if (!matchId) {
     return res.status(400).json({ error: 'matchId required' });
   }

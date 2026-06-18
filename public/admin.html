@@ -74,11 +74,29 @@
       </section>
 
       <!-- Matches status list -->
-      <section class="admin-section">
+      <section class="admin-section" id="matches-status-section">
         <h2>Estat dels Partits</h2>
         <div id="matches-status-list" class="matches-status-grid">
           <!-- filled by JS -->
         </div>
+      </section>
+
+      <!-- Schedule adjust section -->
+      <section class="admin-section" id="admin-schedule-section">
+        <h2>Ajust d'Horaris</h2>
+        <p class="sch-intro">Canvia l'hora d'inici d'un partit i, opcionalment, desplaça tots els events posteriors en la mateixa mesura.</p>
+        <div class="form-row sch-form-row">
+          <div class="form-group" style="flex:2">
+            <label>Partit de referència</label>
+            <select id="sch-match"><option value="">— Selecciona un partit —</option></select>
+          </div>
+          <div class="form-group">
+            <label>Nova hora d'inici</label>
+            <input type="time" id="sch-new-time" disabled>
+          </div>
+        </div>
+        <div id="sch-preview" style="display:none"></div>
+        <div id="sch-msg" class="msg" style="display:none"></div>
       </section>
     </main>
   </div>

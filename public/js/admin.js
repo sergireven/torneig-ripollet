@@ -79,6 +79,7 @@ function enterAdminPanel() {
   document.getElementById('admin-panel').style.display = 'flex';
   populateCategorySelect('sb-category');
   renderMatchesStatus();
+  buildScheduleSection();
 }
 
 // ─── Sidebar nav ──────────────────────────────────────────────────────────────
@@ -92,6 +93,9 @@ function setupAdminNav() {
     </button>
     <button class="admin-nav-item" onclick="scrollToSection('matches-status-section', this)">
       📋 Estat dels Partits
+    </button>
+    <button class="admin-nav-item" onclick="scrollToSection('admin-schedule-section', this)">
+      ⏰ Ajust d'Horaris
     </button>
   `;
 }
@@ -443,4 +447,201 @@ function showMsg(id, type, text) {
   el.className = `msg ${type}`;
   el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
+// ─── Schedule Adjust ──────────────────────────────────────────────────────────
+
+function schTimeToMins(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function schMinsToTime(mins) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+function buildScheduleSection() {
+  const sel = document.getElementById('sch-match');
+  if (!sel || !tournamentData) return;
+
+  const allMatches = [];
+  tournamentData.categories.forEach(cat => {
+    cat.divisions.forEach(div => {
+      div.matches.forEach(m => {
+        allMatches.push({ ...m, catName: cat.name, divName: div.name });
+      });
+    });
+  });
+  allMatches.sort((a, b) => a.time.localeCompare(b.time));
+
+  sel.innerHTML = '<option value="">— Selecciona un partit —</option>';
+  allMatches.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m.id;
+    o.textContent = `${m.time}  ·  ${m.home} vs ${m.away}  (${m.catName} – ${m.divName})`;
+    sel.appendChild(o);
+  });
+
+  sel.removeEventListener('change', onSchMatchChange);
+  sel.addEventListener('change', onSchMatchChange);
+
+  const timeInput = document.getElementById('sch-new-time');
+  timeInput.removeEventListener('change', onSchTimeChange);
+  timeInput.removeEventListener('input', onSchTimeChange);
+  timeInput.addEventListener('change', onSchTimeChange);
+  timeInput.addEventListener('input', onSchTimeChange);
+}
+
+function onSchMatchChange() {
+  const matchId = document.getElementById('sch-match').value;
+  const timeInput = document.getElementById('sch-new-time');
+  const preview = document.getElementById('sch-preview');
+
+  if (!matchId) {
+    timeInput.disabled = true;
+    timeInput.value = '';
+    preview.style.display = 'none';
+    return;
+  }
+
+  const match = findMatchById(matchId);
+  if (!match) return;
+
+  timeInput.disabled = false;
+  timeInput.value = match.time;
+  preview.style.display = 'none';
+}
+
+function onSchTimeChange() {
+  const matchId = document.getElementById('sch-match').value;
+  const newTime = document.getElementById('sch-new-time').value;
+  if (!matchId || !newTime) return;
+
+  const match = findMatchById(matchId);
+  if (!match) return;
+
+  const delta = schTimeToMins(newTime) - schTimeToMins(match.time);
+  if (delta === 0) {
+    document.getElementById('sch-preview').style.display = 'none';
+    return;
+  }
+
+  renderSchedulePreview(matchId, match, newTime, delta);
+}
+
+function renderSchedulePreview(matchId, match, newTime, delta) {
+  if (!tournamentData) return;
+  const preview = document.getElementById('sch-preview');
+  const origMins = schTimeToMins(match.time);
+
+  // Collect subsequent events (matches + award ceremonies) after origTime
+  const subsequent = [];
+  tournamentData.categories.forEach(cat => {
+    cat.divisions.forEach(div => {
+      div.matches.forEach(m => {
+        if (m.id !== matchId && schTimeToMins(m.time) > origMins) {
+          subsequent.push({
+            type: 'match',
+            label: `${m.home} vs ${m.away}`,
+            oldTime: m.time,
+            newTime: schMinsToTime(schTimeToMins(m.time) + delta),
+          });
+        }
+      });
+    });
+    if (cat.awardTime && schTimeToMins(cat.awardTime) > origMins) {
+      subsequent.push({
+        type: 'award',
+        label: `Lliurament de medalles – ${cat.name}`,
+        oldTime: cat.awardTime,
+        newTime: schMinsToTime(schTimeToMins(cat.awardTime) + delta),
+      });
+    }
+  });
+  subsequent.sort((a, b) => a.oldTime.localeCompare(b.oldTime));
+
+  const deltaStr = delta > 0 ? `+${delta}` : `${delta}`;
+  const sign = delta > 0 ? 'delay' : 'early';
+  const signLabel = delta > 0 ? 'Retard' : 'Avanç';
+
+  preview.innerHTML = `
+    <div class="sch-delta-badge ${sign}">
+      ⏱ ${signLabel}: <strong>${deltaStr} min</strong>
+    </div>
+
+    <div class="sch-pivot-row">
+      <span class="sch-event-label">📍 ${match.home} vs ${match.away}</span>
+      <span class="sch-time-old">${match.time}</span>
+      <span class="sch-arrow">→</span>
+      <span class="sch-time-new">${newTime}</span>
+    </div>
+
+    ${subsequent.length > 0 ? `
+      <label class="sch-cascade-toggle">
+        <input type="checkbox" id="sch-cascade" checked>
+        Ajustar els ${subsequent.length} events posteriors
+      </label>
+      <div id="sch-cascade-list" class="sch-cascade-list">
+        ${subsequent.map(e => `
+          <div class="sch-event-row ${e.type}">
+            <span class="sch-event-label">${e.type === 'award' ? '🏆 ' : ''}${e.label}</span>
+            <span class="sch-time-old">${e.oldTime}</span>
+            <span class="sch-arrow">→</span>
+            <span class="sch-time-new">${e.newTime}</span>
+          </div>
+        `).join('')}
+      </div>
+    ` : `<p class="sch-no-subsequent">No hi ha events posteriors a ajustar.</p>`}
+
+    <div class="sch-actions">
+      <button class="btn-primary" id="sch-apply-btn">✓ Aplicar canvis</button>
+    </div>
+  `;
+
+  document.getElementById('sch-cascade')?.addEventListener('change', e => {
+    const list = document.getElementById('sch-cascade-list');
+    if (list) list.style.opacity = e.target.checked ? '1' : '0.3';
+  });
+
+  document.getElementById('sch-apply-btn').addEventListener('click', async () => {
+    const cascade = document.getElementById('sch-cascade')?.checked ?? false;
+    await applyScheduleChange(matchId, newTime, cascade);
+  });
+
+  preview.style.display = 'block';
+}
+
+async function applyScheduleChange(matchId, newTime, cascade) {
+  const btn = document.getElementById('sch-apply-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Aplicant…'; }
+
+  try {
+    const res = await fetch('/api/matches', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: authToken, action: 'adjustSchedule', matchId, newTime, cascade }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showMsg('sch-msg', 'success', "✓ Horaris actualitzats! La web s'actualitzarà en ~1-2 minuts.");
+      const notice = document.getElementById('save-notice');
+      if (notice) { notice.style.display = 'block'; setTimeout(() => { notice.style.display = 'none'; }, 10000); }
+
+      await loadData();
+      renderMatchesStatus();
+      buildScheduleSection();
+      document.getElementById('sch-preview').style.display = 'none';
+      document.getElementById('sch-new-time').disabled = true;
+      document.getElementById('sch-new-time').value = '';
+    } else {
+      showMsg('sch-msg', 'error', data.error || 'Error desconegut');
+      if (btn) { btn.disabled = false; btn.textContent = '✓ Aplicar canvis'; }
+    }
+  } catch {
+    showMsg('sch-msg', 'error', 'Error de connexió amb el servidor');
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Aplicar canvis'; }
+  }
 }

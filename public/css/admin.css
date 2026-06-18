@@ -644,6 +644,152 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Schedule Adjust ─── */
+.sch-intro {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.83rem;
+  margin-bottom: 1.1rem;
+  line-height: 1.5;
+}
+
+.sch-form-row {
+  grid-template-columns: 2fr 1fr;
+}
+
+.form-group input[type="time"] {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+  color-scheme: dark;
+  width: 100%;
+}
+
+.form-group input[type="time"]:focus {
+  border-color: var(--accent);
+}
+
+.form-group input[type="time"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sch-delta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.38rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.85rem;
+}
+
+.sch-delta-badge.delay {
+  background: rgba(255,145,0,0.14);
+  border: 1px solid rgba(255,145,0,0.35);
+  color: #ffb060;
+}
+
+.sch-delta-badge.early {
+  background: rgba(40,200,120,0.12);
+  border: 1px solid rgba(40,200,120,0.3);
+  color: #5de89a;
+}
+
+.sch-pivot-row,
+.sch-event-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 0.3rem;
+  font-size: 0.83rem;
+}
+
+.sch-pivot-row {
+  border-color: rgba(255,196,0,0.28);
+  background: rgba(255,196,0,0.07);
+  margin-bottom: 0.7rem;
+}
+
+.sch-event-row.award {
+  border-color: rgba(100,180,255,0.2);
+  background: rgba(100,180,255,0.05);
+}
+
+.sch-event-label {
+  flex: 1;
+  color: rgba(255,255,255,0.72);
+  font-weight: 600;
+}
+
+.sch-time-old {
+  color: rgba(255,255,255,0.3);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-decoration: line-through;
+}
+
+.sch-arrow {
+  color: rgba(255,255,255,0.25);
+  font-size: 0.72rem;
+}
+
+.sch-time-new {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 0.88rem;
+  min-width: 38px;
+  text-align: right;
+}
+
+.sch-cascade-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.55rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  font-size: 0.86rem;
+  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+}
+
+.sch-cascade-toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.sch-cascade-list {
+  transition: opacity 0.2s;
+}
+
+.sch-no-subsequent {
+  color: rgba(255,255,255,0.3);
+  font-size: 0.82rem;
+  margin: 0.5rem 0;
+}
+
+.sch-actions {
+  margin-top: 1.1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* ─── Match status badge ─── */
 .match-status-badge {
   display: inline-flex;
