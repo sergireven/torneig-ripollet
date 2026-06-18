@@ -898,6 +898,124 @@ img { display: block; }
   font-weight: 600;
 }
 
+/* ===================== VESTIDORS ===================== */
+.locker-intro {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  background: rgba(0,31,110,0.04);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+}
+
+.locker-tables {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 540px) {
+  .locker-tables { grid-template-columns: 1fr; }
+}
+
+.locker-table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.locker-table-header {
+  background: var(--primary);
+  color: white;
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 14px;
+  text-align: center;
+}
+
+.locker-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.locker-table thead th {
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.locker-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+
+.locker-table tbody tr:last-child { border-bottom: none; }
+.locker-table tbody tr:hover { background: rgba(0,31,110,0.03); }
+
+.locker-table tbody td {
+  padding: 8px 12px;
+  vertical-align: middle;
+}
+
+.locker-team-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.locker-shield {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.locker-room-name {
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.locker-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.locker-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.locker-note-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.locker-note-femeni {
+  background: rgba(255,100,200,0.07);
+  border: 1px solid rgba(255,100,200,0.2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--text);
+}
+
 /* ===================== INSTAGRAM SECTION ===================== */
 .instagram-section {
   background: white;

@@ -53,6 +53,7 @@ function buildSidebar() {
         { label: 'Regles i Format', id: 'sec-info', anchor: 'info-rules' },
         { label: 'Horaris', id: 'sec-info', anchor: 'info-schedule' },
         { label: 'Ubicació i Contactes', id: 'sec-info', anchor: 'info-location' },
+        { label: 'Vestidors', id: 'sec-info', anchor: 'info-vestidors' },
       ]
     },
     { type: 'separator' },
@@ -145,6 +146,7 @@ function buildBottomNav() {
         { icon: '📜', label: 'Regles',            id: 'sec-info', anchor: 'info-rules' },
         { icon: '🕐', label: 'Horaris',           id: 'sec-info', anchor: 'info-schedule' },
         { icon: '📍', label: 'Ubicació',          id: 'sec-info', anchor: 'info-location' },
+        { icon: '🚪', label: 'Vestidors',         id: 'sec-info', anchor: 'info-vestidors' },
       ]
     },
     {
@@ -441,9 +443,58 @@ function buildInfoSection() {
         </iframe>
       </div>
     </div>
+
+    <!-- Vestidors -->
+    <div class="card" id="info-vestidors">
+      <div class="card-title">🚪 Vestidors</div>
+      <div class="locker-intro">
+        <p>${info.lockerRooms.intro}</p>
+      </div>
+      <div class="locker-tables">
+        ${buildLockerTableHTML('Prebenjamí', info.lockerRooms.prebenjami)}
+        ${buildLockerTableHTML('Benjamí', info.lockerRooms.benjami)}
+      </div>
+      <div class="locker-notes">
+        <div class="locker-note locker-note-femeni">
+          <span class="locker-note-icon">♀</span>
+          <span><strong>Vestidor femení:</strong> ${info.lockerRooms.femeniNote}</span>
+        </div>
+        <div class="locker-note">
+          <span class="locker-note-icon">⚠️</span>
+          <span>${info.lockerRooms.disclaimer}</span>
+        </div>
+      </div>
+    </div>
   `;
 
   return sec;
+}
+
+function buildLockerTableHTML(label, rows) {
+  const rowsHTML = rows.map(r => `
+    <tr>
+      <td>
+        <div class="locker-team-cell">
+          <img src="${shieldSrc(r.teamKey)}" alt="${r.team}" class="locker-shield"
+               onerror="this.style.opacity=0.3">
+          <span>${r.team}</span>
+        </div>
+      </td>
+      <td class="locker-room-name">${r.locker}</td>
+    </tr>
+  `).join('');
+
+  return `
+    <div class="locker-table-wrap">
+      <div class="locker-table-header">${label}</div>
+      <table class="locker-table">
+        <thead>
+          <tr><th>Equip</th><th>Vestidor</th></tr>
+        </thead>
+        <tbody>${rowsHTML}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 function buildScheduleHTML(info) {

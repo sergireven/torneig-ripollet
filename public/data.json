@@ -53,6 +53,28 @@
         "value": "Assignats per l'organització; la clau es lliura a l'entrenador/delegat i s'ha de retornar en acabar"
       }
     ],
+    "lockerRooms": {
+      "intro": "A l'arribada, es lliurarà la clau del vestidor a l'entrenador o delegat de cada equip, que en serà el responsable durant tota la jornada. En finalitzar la participació al torneig, la clau s'haurà de retornar al personal de l'organització.",
+      "disclaimer": "L'organització no es fa responsable de la pèrdua o deteriorament d'objectes personals. Es prega no deixar objectes als vestidors una vegada finalitzat el seu ús.",
+      "femeniNote": "En cas sigui necessari, el vestidor PARQUET 2 estarà habilitat per a les nenes.",
+      "prebenjami": [
+        { "team": "CH Ripollet A",   "teamKey": "chr",            "locker": "Parquet 1" },
+        { "team": "CH Ripollet B",   "teamKey": "chr",            "locker": "Parquet 4" },
+        { "team": "CH Ripollet C",   "teamKey": "chr",            "locker": "Parquet 3" },
+        { "team": "CH Sta Perpètua A", "teamKey": "ch-sta-perpetua", "locker": "Annexa 1" },
+        { "team": "HC Sentmenat",    "teamKey": "hc-sentmenat",   "locker": "Annexa 2" },
+        { "team": "CH Ripollet D",   "teamKey": "chr",            "locker": "Annexa 3" },
+        { "team": "PHC Sant Cugat G","teamKey": "phc-sant-cugat", "locker": "Annexa 4" }
+      ],
+      "benjami": [
+        { "team": "CH Ripollet A",   "teamKey": "chr",            "locker": "Parquet 1" },
+        { "team": "CH Ripollet B",   "teamKey": "chr",            "locker": "Parquet 4" },
+        { "team": "CH Sta Perpètua A", "teamKey": "ch-sta-perpetua", "locker": "Annexa 1" },
+        { "team": "HC Sentmenat",    "teamKey": "hc-sentmenat",   "locker": "Annexa 2" },
+        { "team": "CH Sant Just B",  "teamKey": "hc-sant-just",   "locker": "Annexa 3" },
+        { "team": "PHC Sant Cugat B","teamKey": "phc-sant-cugat", "locker": "Annexa 4" }
+      ]
+    },
     "schedules": {
       "prebenjami": {
         "label": "Prebenjamí",
