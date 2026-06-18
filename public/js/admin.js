@@ -358,9 +358,8 @@ function renderScoreboard(match) {
 
     <button class="sb-save-btn" id="sb-save-btn">💾 Guardar Resultat</button>
   `;
-}
 
-  // Wire up event listeners (avoids inline handler scope issues)
+  // Wire up event listeners after innerHTML
   container.querySelectorAll('.sb-score-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const side = btn.dataset.side;
@@ -387,17 +386,6 @@ function renderScoreboard(match) {
   });
   document.getElementById('sb-save-btn')?.addEventListener('click', sbSave);
 }
-
-window.sbAdjust = function(side, delta) {
-  if (side === 'home') {
-    sbHome = Math.max(0, sbHome + delta);
-    document.getElementById('sb-val-home').textContent = sbHome;
-  } else {
-    sbAway = Math.max(0, sbAway + delta);
-    document.getElementById('sb-val-away').textContent = sbAway;
-  }
-  updateSbPenaltyVisibility();
-};
 
 function updateSbPenaltyVisibility() {
   const area = document.getElementById('sb-penalty-area');
