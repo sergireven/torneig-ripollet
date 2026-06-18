@@ -312,6 +312,9 @@ function buildContent() {
   // Update bar
   main.appendChild(buildUpdateBar());
 
+  // Live widget
+  main.appendChild(buildLiveSection());
+
   // Info section
   main.appendChild(buildInfoSection());
 
@@ -334,6 +337,7 @@ function buildContent() {
 
 function buildSectionById(id) {
   if (!DATA) return null;
+  if (id === 'sec-live') return buildLiveSection();
   if (id === 'sec-info') return buildInfoSection();
   if (id === 'sec-campus') return buildInstagramSection();
   if (id === 'sec-temporada') return buildOkCat360Section();
@@ -365,6 +369,122 @@ function updateBarHTML() {
 function updateBar() {
   const bar = document.getElementById('update-bar');
   if (bar) bar.innerHTML = updateBarHTML();
+}
+
+/* ===================== LIVE WIDGET ===================== */
+function getLiveStatus() {
+  const allMatches = [];
+  DATA.categories.forEach(cat => {
+    cat.divisions.forEach(div => {
+      div.matches.forEach(m => {
+        allMatches.push({ ...m, catName: cat.name, divName: div.name });
+      });
+    });
+  });
+  allMatches.sort((a, b) => a.time.localeCompare(b.time));
+
+  const unplayed = allMatches.filter(m => !m.played);
+  if (unplayed.length === 0) return { current: null, next: null, allDone: true };
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+  if (today !== DATA.tournament.date) {
+    return { current: null, next: unplayed[0], allDone: false };
+  }
+
+  const toMins = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  let current = null;
+  for (const m of unplayed) {
+    const start = toMins(m.time);
+    if (nowMins >= start && nowMins < start + 45) { current = m; break; }
+  }
+
+  let next = null;
+  const refMins = current ? toMins(current.time) + 1 : nowMins;
+  for (const m of unplayed) {
+    if (m !== current && toMins(m.time) > refMins) { next = m; break; }
+  }
+
+  return { current, next, allDone: false };
+}
+
+function buildLiveSection() {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.id = 'sec-live';
+
+  const { current, next, allDone } = getLiveStatus();
+
+  if (allDone) {
+    sec.innerHTML = `
+      <div class="live-widget live-done-widget">
+        <span class="live-done-trophy">🏆</span>
+        <span class="live-done-text">Torneig finalitzat</span>
+        <span class="live-done-sub">Gràcies a tots els participants!</span>
+      </div>`;
+    return sec;
+  }
+
+  const matchBlock = (m, isLarge) => `
+    <div class="live-matchup ${isLarge ? '' : 'live-matchup-sm'}">
+      <div class="live-team">
+        <img src="${shieldSrc(m.homeKey)}" class="live-shield ${isLarge ? '' : 'live-shield-sm'}" onerror="this.style.opacity=0.3">
+        <span class="live-team-name">${m.home}</span>
+      </div>
+      <div class="live-vs ${isLarge ? '' : 'live-vs-sm'}">VS</div>
+      <div class="live-team">
+        <img src="${shieldSrc(m.awayKey)}" class="live-shield ${isLarge ? '' : 'live-shield-sm'}" onerror="this.style.opacity=0.3">
+        <span class="live-team-name">${m.away}</span>
+      </div>
+    </div>`;
+
+  let html = '<div class="live-widget">';
+
+  if (current) {
+    html += `
+      <div class="live-current">
+        <div class="live-row-header">
+          <span class="live-dot"></span>
+          <span class="live-label">En curs</span>
+          <span class="live-timepill">${current.time}h</span>
+          <span class="live-cat">${current.catName} · ${current.divName}</span>
+        </div>
+        ${matchBlock(current, true)}
+      </div>`;
+  }
+
+  if (next) {
+    if (!current) {
+      html += `
+        <div class="live-current">
+          <div class="live-row-header">
+            <span style="font-size:16px;line-height:1">⏭</span>
+            <span class="live-label">Proper Partit</span>
+            <span class="live-timepill">${next.time}h</span>
+            <span class="live-cat">${next.catName} · ${next.divName}</span>
+          </div>
+          ${matchBlock(next, true)}
+        </div>`;
+    } else {
+      html += `
+        <div class="live-next-row">
+          <span class="live-next-label">Proper</span>
+          <div class="live-divider"></div>
+          <div class="live-next-info">
+            <span class="live-next-meta">${next.catName} · ${next.divName}</span>
+            <span class="live-next-teams">${next.time}h · ${next.home} vs ${next.away}</span>
+          </div>
+        </div>`;
+    }
+  }
+
+  html += '</div>';
+  sec.innerHTML = html;
+  return sec;
 }
 
 /* ===================== INFO SECTION ===================== */
