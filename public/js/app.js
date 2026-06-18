@@ -46,6 +46,8 @@ function buildSidebar() {
   const nav = document.getElementById('sidebar-nav');
 
   const items = [
+    { type: 'direct', label: 'Partit en curs', icon: '🔴', id: 'sec-live' },
+    { type: 'separator' },
     {
       type: 'group', label: 'Informació del Torneig', icon: '📋', id: 'sec-info',
       children: [
@@ -142,12 +144,11 @@ function buildBottomNav() {
     {
       icon: '📋', label: 'Info', id: 'sec-info',
       children: [
-        { icon: '👋', label: 'Benvinguda',       id: 'sec-info', anchor: 'info-welcome' },
-        { icon: '📜', label: 'Regles',            id: 'sec-info', anchor: 'info-rules' },
-        { icon: '🕐', label: 'Horaris',           id: 'sec-info', anchor: 'info-schedule' },
-        { icon: '📍', label: 'Ubicació',          id: 'sec-info', anchor: 'info-location' },
-        { icon: '🚪', label: 'Vestidors',         id: 'sec-info', anchor: 'info-vestidors' },
-        { icon: '🤝', label: 'Patrocinadors',     id: 'sec-sponsors' },
+        { icon: '👋', label: 'Benvinguda',  id: 'sec-info', anchor: 'info-welcome' },
+        { icon: '📜', label: 'Regles',      id: 'sec-info', anchor: 'info-rules' },
+        { icon: '🕐', label: 'Horaris',     id: 'sec-info', anchor: 'info-schedule' },
+        { icon: '📍', label: 'Ubicació',    id: 'sec-info', anchor: 'info-location' },
+        { icon: '🚪', label: 'Vestidors',   id: 'sec-info', anchor: 'info-vestidors' },
       ]
     },
     {
@@ -170,6 +171,7 @@ function buildBottomNav() {
       ]
     },
     { icon: '📊', label: 'Temporada', id: 'sec-temporada' },
+    { icon: '🤝', label: 'Sponsors', id: 'sec-sponsors' },
     { icon: '⚙️', label: 'Admin', id: null, href: 'admin.html',
       children: [
         { icon: '🔧', label: 'Panell d\'administrador', href: 'admin.html' },
