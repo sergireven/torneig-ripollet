@@ -801,7 +801,7 @@ function buildInstagramSection() {
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlClub}"
           data-instgrm-version="14"
-          style="display:none;background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
+          style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
         </blockquote>
       </div>
     </div>
@@ -821,7 +821,7 @@ function buildInstagramSection() {
         <blockquote class="instagram-media"
           data-instgrm-permalink="${urlCampus}"
           data-instgrm-version="14"
-          style="display:none;background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
+          style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
         </blockquote>
       </div>
     </div>
@@ -849,12 +849,8 @@ function setupIgLoading(wrapperId, fallbackUrl) {
   if (!wrap) return;
 
   const loading = wrap.querySelector('.ig-loading');
-  const blockquote = wrap.querySelector('.instagram-media');
 
-  function onLoaded() {
-    if (loading) loading.remove();
-    if (blockquote) blockquote.style.display = '';
-  }
+  function onLoaded() { loading?.remove(); }
 
   function onFailed() {
     if (!loading) return;
@@ -866,19 +862,18 @@ function setupIgLoading(wrapperId, fallbackUrl) {
     `;
   }
 
-  // Watch for the iframe that embed.js injects
-  const observer = new MutationObserver(() => {
+  // Poll every 500ms; give up after 10s
+  let elapsed = 0;
+  const poll = setInterval(() => {
+    elapsed += 500;
     if (wrap.querySelector('iframe')) {
+      clearInterval(poll);
       onLoaded();
-      observer.disconnect();
+    } else if (elapsed >= 10000) {
+      clearInterval(poll);
+      onFailed();
     }
-  });
-  observer.observe(wrap, { childList: true, subtree: true });
-
-  // After 10s without iframe → show fallback link
-  setTimeout(() => {
-    if (!wrap.querySelector('iframe')) onFailed();
-  }, 10000);
+  }, 500);
 }
 
 /* ===================== OKCAT360 SECTION ===================== */
