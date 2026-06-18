@@ -587,7 +587,7 @@ function buildMatchCardHTML(m) {
     if (draw && m.penaltyWinner) {
       const ps = (m.penaltyHomeScore !== null && m.penaltyAwayScore !== null)
         ? ` ${m.penaltyHomeScore}-${m.penaltyAwayScore}` : '';
-      penLabel = `<span class="match-penalty-label">D${ps}</span>`;
+      penLabel = `<span class="match-penalty-label">Dir${ps}</span>`;
     }
     scoreHTML = `<span class="match-score">${m.homeScore} - ${m.awayScore}</span>${penLabel}`;
   }
@@ -643,8 +643,8 @@ function buildSingleMatchHTML(m) {
   if (draw && m.penaltyWinner) {
     const winner = m.penaltyWinner === 'home' ? m.home : m.away;
     const ps = (m.penaltyHomeScore !== null && m.penaltyAwayScore !== null)
-      ? ` (${m.penaltyHomeScore}-${m.penaltyAwayScore})` : '';
-    penLabel = `<div class="single-score-penalty">Directa${ps} · ${winner}</div>`;
+      ? ` ${m.penaltyHomeScore}-${m.penaltyAwayScore}` : '';
+    penLabel = `<div class="single-score-penalty">Directes${ps} · ${winner}</div>`;
   }
 
   return `
@@ -807,16 +807,23 @@ function closeSidebar() {
 
 /* ===================== SCROLL SPY ===================== */
 function setupScrollSpy() {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id;
-        document.querySelectorAll('[data-section]').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.section === id);
-        });
-      }
-    });
-  }, { threshold: 0.15 });
+  const OFFSET = 100; // px from top where section counts as active
 
-  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+  function update() {
+    const sections = [...document.querySelectorAll('.section')];
+    const scrollY = window.scrollY;
+    let activeId = sections[0]?.id;
+
+    for (const sec of sections) {
+      if (sec.offsetTop <= scrollY + OFFSET) activeId = sec.id;
+      else break;
+    }
+
+    document.querySelectorAll('[data-section]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.section === activeId);
+    });
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
 }

@@ -312,9 +312,9 @@ function renderScoreboard(match) {
         <div class="sb-team-name">${match.home}</div>
         <div class="sb-score-area">
           <div class="sb-score-btns">
-            <button class="sb-score-btn" onclick="sbAdjust('home',-1)">−</button>
+            <button class="sb-score-btn" data-side="home" data-delta="-1">−</button>
             <div class="sb-score-val" id="sb-val-home">${match.homeScore}</div>
-            <button class="sb-score-btn" onclick="sbAdjust('home',+1)">+</button>
+            <button class="sb-score-btn" data-side="home" data-delta="1">+</button>
           </div>
         </div>
       </div>
@@ -324,41 +324,68 @@ function renderScoreboard(match) {
         <div class="sb-team-name">${match.away}</div>
         <div class="sb-score-area">
           <div class="sb-score-btns">
-            <button class="sb-score-btn" onclick="sbAdjust('away',-1)">−</button>
+            <button class="sb-score-btn" data-side="away" data-delta="-1">−</button>
             <div class="sb-score-val" id="sb-val-away">${match.awayScore}</div>
-            <button class="sb-score-btn" onclick="sbAdjust('away',+1)">+</button>
+            <button class="sb-score-btn" data-side="away" data-delta="1">+</button>
           </div>
         </div>
       </div>
     </div>
 
     <div id="sb-penalty-area" class="sb-penalty" style="display:${isDraw ? 'block' : 'none'}">
-      <div class="sb-penalty-label">⚡ Empat — Resultat directa</div>
+      <div class="sb-penalty-label">⚡ Empat — Resultat directes</div>
       <div class="form-row" style="margin-top:0.5rem">
         <div class="form-group">
           <label style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase">
             ${match.home}
           </label>
           <input type="number" id="sb-pen-home" min="0" value="${match.penaltyHomeScore ?? 0}"
-            oninput="sbPenaltyHome=+this.value" style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%">
+            style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%;font-family:inherit">
         </div>
         <div class="form-group">
           <label style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase">
             ${match.away}
           </label>
           <input type="number" id="sb-pen-away" min="0" value="${match.penaltyAwayScore ?? 0}"
-            oninput="sbPenaltyAway=+this.value" style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%">
+            style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%;font-family:inherit">
         </div>
       </div>
       <label class="checkbox-label" style="margin-top:0.6rem">
-        <input type="checkbox" id="sb-no-penalty" ${!match.penaltyWinner && isDraw ? 'checked' : ''}
-          onchange="if(this.checked){sbPenaltyHome=null;sbPenaltyAway=null}">
-        Sense directa (empat definitiu)
+        <input type="checkbox" id="sb-no-penalty" ${!match.penaltyWinner && isDraw ? 'checked' : ''}>
+        Sense directes (empat definitiu)
       </label>
     </div>
 
-    <button class="sb-save-btn" onclick="sbSave()">💾 Guardar Resultat</button>
+    <button class="sb-save-btn" id="sb-save-btn">💾 Guardar Resultat</button>
   `;
+}
+
+  // Wire up event listeners (avoids inline handler scope issues)
+  container.querySelectorAll('.sb-score-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const side = btn.dataset.side;
+      const delta = +btn.dataset.delta;
+      if (side === 'home') {
+        sbHome = Math.max(0, sbHome + delta);
+        document.getElementById('sb-val-home').textContent = sbHome;
+      } else {
+        sbAway = Math.max(0, sbAway + delta);
+        document.getElementById('sb-val-away').textContent = sbAway;
+      }
+      updateSbPenaltyVisibility();
+    });
+  });
+
+  document.getElementById('sb-pen-home')?.addEventListener('input', e => {
+    sbPenaltyHome = +e.target.value;
+  });
+  document.getElementById('sb-pen-away')?.addEventListener('input', e => {
+    sbPenaltyAway = +e.target.value;
+  });
+  document.getElementById('sb-no-penalty')?.addEventListener('change', e => {
+    if (e.target.checked) { sbPenaltyHome = null; sbPenaltyAway = null; }
+  });
+  document.getElementById('sb-save-btn')?.addEventListener('click', sbSave);
 }
 
 window.sbAdjust = function(side, delta) {
@@ -379,7 +406,7 @@ function updateSbPenaltyVisibility() {
   if (sbHome !== sbAway) { sbPenaltyHome = null; sbPenaltyAway = null; }
 }
 
-window.sbSave = async function() {
+async function sbSave() {
   if (!sbMatchId) return;
   const noPen = document.getElementById('sb-no-penalty')?.checked;
   const penaltyHomeScore = (sbHome === sbAway && !noPen) ? (sbPenaltyHome ?? 0) : null;
