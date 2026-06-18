@@ -106,12 +106,12 @@
               "homeKey": "chr",
               "away": "CHR C",
               "awayKey": "chr",
-              "homeScore": 1,
-              "awayScore": 1,
+              "homeScore": 0,
+              "awayScore": 0,
               "played": false,
-              "penaltyWinner": "away",
-              "penaltyHomeScore": 2,
-              "penaltyAwayScore": 3
+              "penaltyWinner": null,
+              "penaltyHomeScore": null,
+              "penaltyAwayScore": null
             }
           ]
         },
@@ -131,8 +131,8 @@
               "awayScore": 0,
               "played": false,
               "penaltyWinner": null,
-              "penaltyHomeScore": 0,
-              "penaltyAwayScore": 0
+              "penaltyHomeScore": null,
+              "penaltyAwayScore": null
             },
             {
               "id": "prebe-iniciacio-2",

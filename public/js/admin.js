@@ -192,6 +192,9 @@ function setupFormListeners() {
   document.getElementById('f-home-score').addEventListener('input', checkPenaltyVisibility);
   document.getElementById('f-away-score').addEventListener('input', checkPenaltyVisibility);
 
+  // Reset button
+  document.getElementById('f-reset-btn').addEventListener('click', resetFormMatch);
+
   // Form submit
   document.getElementById('update-form').addEventListener('submit', async e => {
     e.preventDefault();
@@ -240,6 +243,8 @@ function showFormPreview(match) {
 
 function hideFormPreview() {
   document.getElementById('f-match-preview').style.display = 'none';
+  document.getElementById('f-match-status').style.display = 'none';
+  document.getElementById('f-reset-btn').style.display = 'none';
   document.getElementById('f-penalty-section').style.display = 'none';
   document.getElementById('f-penalty-home-score').value = 0;
   document.getElementById('f-penalty-away-score').value = 0;
@@ -254,6 +259,17 @@ function setFormScores(match) {
   document.getElementById('f-penalty-away-score').value = match.penaltyAwayScore ?? 0;
   document.getElementById('f-no-penalty').checked =
     match.homeScore === match.awayScore && !match.penaltyWinner;
+
+  // Status badge
+  const statusEl = document.getElementById('f-match-status');
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = match.played
+    ? `<span class="match-status-badge played">✅ Jugat · ${match.homeScore}–${match.awayScore}</span>`
+    : `<span class="match-status-badge pending">⏳ Pendent (no jugat)</span>`;
+
+  // Reset button: only show when match has been played
+  document.getElementById('f-reset-btn').style.display = match.played ? 'block' : 'none';
+
   checkPenaltyVisibility();
 }
 
@@ -292,6 +308,20 @@ async function submitFormUpdate() {
   }
 
   await saveMatch({ matchId, homeScore, awayScore, played, penaltyHomeScore, penaltyAwayScore }, 'form-msg');
+}
+
+async function resetFormMatch() {
+  const matchId = document.getElementById('f-match').value;
+  if (!matchId) return;
+  if (!confirm('Segur que vols esborrar el resultat d\'aquest partit? Tornarà a aparèixer com a pendent.')) return;
+  await saveMatch({
+    matchId,
+    homeScore: 0,
+    awayScore: 0,
+    played: false,
+    penaltyHomeScore: null,
+    penaltyAwayScore: null
+  }, 'form-msg');
 }
 
 // ─── Scoreboard ───────────────────────────────────────────────────────────────
@@ -435,10 +465,17 @@ async function saveMatch(payload, msgId) {
       await loadData();
       renderMatchesStatus();
 
-      // Refresh the scoreboard if we're on that tab
+      // Refresh scoreboard if that match is loaded
       if (sbMatchId === payload.matchId) {
         const m = findMatchById(payload.matchId);
         if (m) renderScoreboard(m);
+      }
+
+      // Refresh form status badge + reset button
+      const formMatchId = document.getElementById('f-match')?.value;
+      if (formMatchId === payload.matchId) {
+        const m = findMatchById(payload.matchId);
+        if (m) setFormScores(m);
       }
     } else {
       showMsg(msgId, 'error', data.error || 'Error desconegut');
