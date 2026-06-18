@@ -52,18 +52,23 @@ function buildSidebar() {
     },
     { type: 'separator' },
     {
-      type: 'group', label: 'Prebenjamí', icon: '🏒', id: 'sec-prebenjami',
+      type: 'group', label: 'Categories', icon: '🏒',
       children: [
-        { label: '🥇 Or', id: 'sec-prebe-or' },
-        { label: '🥈 Plata', id: 'sec-prebe-plata' },
-        { label: '⭐ Iniciació', id: 'sec-prebe-iniciacio' },
-      ]
-    },
-    {
-      type: 'group', label: 'Benjamí', icon: '🏒', id: 'sec-benjami',
-      children: [
-        { label: '🥇 Or', id: 'sec-benjami-or' },
-        { label: '🥈 Plata', id: 'sec-benjami-plata' },
+        {
+          label: 'Prebenjamí',
+          children: [
+            { label: '🥇 Or', id: 'sec-prebe-or' },
+            { label: '🥈 Plata', id: 'sec-prebe-plata' },
+            { label: '⭐ Iniciació', id: 'sec-prebe-iniciacio' },
+          ]
+        },
+        {
+          label: 'Benjamí',
+          children: [
+            { label: '🥇 Or', id: 'sec-benjami-or' },
+            { label: '🥈 Plata', id: 'sec-benjami-plata' },
+          ]
+        },
       ]
     },
     { type: 'separator' },
@@ -81,14 +86,24 @@ function buildSidebar() {
 
   nav.innerHTML = items.map(renderNavItem).join('');
 
-  // Expand groups with click
+  // Expand top-level groups
   nav.querySelectorAll('.nav-group-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const children = btn.nextElementSibling;
       btn.classList.toggle('open');
       children.classList.toggle('open');
     });
-    // Start open
+    btn.classList.add('open');
+    btn.nextElementSibling.classList.add('open');
+  });
+
+  // Expand subgroups
+  nav.querySelectorAll('.nav-subgroup-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const children = btn.nextElementSibling;
+      btn.classList.toggle('open');
+      children.classList.toggle('open');
+    });
     btn.classList.add('open');
     btn.nextElementSibling.classList.add('open');
   });
@@ -128,18 +143,15 @@ function buildBottomNav() {
       ]
     },
     {
-      icon: '⭐', label: 'Prebenjamí', id: 'sec-prebenjami',
+      icon: '🏒', label: 'Categories', id: null,
       children: [
+        { isHeader: true, label: 'Prebenjamí' },
         { icon: '🥇', label: 'Or',         id: 'sec-prebe-or' },
         { icon: '🥈', label: 'Plata',      id: 'sec-prebe-plata' },
-        { icon: '🏒', label: 'Iniciació',  id: 'sec-prebe-iniciacio' },
-      ]
-    },
-    {
-      icon: '🏒', label: 'Benjamí', id: 'sec-benjami',
-      children: [
-        { icon: '🥇', label: 'Or',    id: 'sec-benjami-or' },
-        { icon: '🥈', label: 'Plata', id: 'sec-benjami-plata' },
+        { icon: '⭐', label: 'Iniciació',  id: 'sec-prebe-iniciacio' },
+        { isHeader: true, label: 'Benjamí' },
+        { icon: '🥇', label: 'Or',         id: 'sec-benjami-or' },
+        { icon: '🥈', label: 'Plata',      id: 'sec-benjami-plata' },
       ]
     },
     {
@@ -169,6 +181,9 @@ function buildBottomNav() {
 
   function openSheet(tab, idx) {
     sheetItems.innerHTML = tab.children.map(c => {
+      if (c.isHeader) {
+        return `<div class="bs-header">${c.label}</div>`;
+      }
       if (c.href) {
         return `<a class="bs-item" href="${c.href}">
           <span class="bs-item-icon">${c.icon}</span>${c.label}</a>`;
@@ -247,11 +262,25 @@ function renderNavItem(item) {
     </a>`;
   }
   if (item.type === 'group') {
-    const children = item.children.map(c =>
-      `<button class="nav-item" data-section="${c.id}" ${c.anchor ? `data-anchor="${c.anchor}"` : ''}>
+    const children = item.children.map(c => {
+      if (c.children) {
+        const subItems = c.children.map(sc =>
+          `<button class="nav-item nav-item-deep" data-section="${sc.id}" ${sc.anchor ? `data-anchor="${sc.anchor}"` : ''}>
+            ${sc.label}
+          </button>`
+        ).join('');
+        return `<div class="nav-subgroup">
+          <button class="nav-subgroup-btn">
+            ${c.label}
+            <span class="nav-arrow">▶</span>
+          </button>
+          <div class="nav-subgroup-children">${subItems}</div>
+        </div>`;
+      }
+      return `<button class="nav-item" data-section="${c.id}" ${c.anchor ? `data-anchor="${c.anchor}"` : ''}>
         ${c.label}
-      </button>`
-    ).join('');
+      </button>`;
+    }).join('');
     return `<div class="nav-group">
       <button class="nav-group-btn">
         <span class="nav-icon">${item.icon}</span>

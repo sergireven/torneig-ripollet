@@ -138,6 +138,56 @@ img { display: block; }
   display: block;
 }
 
+/* Subgroup (3rd level) */
+.nav-subgroup {
+  margin-bottom: 2px;
+}
+
+.nav-subgroup-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 16px 6px 24px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.65);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.nav-subgroup-btn:hover { color: var(--accent); }
+
+.nav-subgroup-btn .nav-arrow {
+  margin-left: auto;
+  font-size: 9px;
+  transition: transform 0.2s;
+  opacity: 0.5;
+}
+
+.nav-subgroup-btn.open .nav-arrow {
+  transform: rotate(90deg);
+}
+
+.nav-subgroup-children {
+  display: none;
+  padding-left: 8px;
+}
+
+.nav-subgroup-children.open {
+  display: block;
+}
+
+.nav-item-deep {
+  padding-left: 36px;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -1163,6 +1213,16 @@ img { display: block; }
   }
 
   .bs-item-icon { font-size: 20px; flex-shrink: 0; }
+
+  .bs-header {
+    padding: 10px 24px 4px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    opacity: 0.8;
+  }
 
   .bs-divider {
     height: 1px;
