@@ -735,7 +735,7 @@ function buildInstagramSection() {
       <h2>Instagram</h2>
     </div>
 
-    <!-- Club CHR -->
+    <!-- Club CH Ripollet -->
     <div class="instagram-section" id="ig-chr" style="margin-bottom:1.5rem">
       <div class="instagram-header">
         <span class="instagram-icon">📸</span>

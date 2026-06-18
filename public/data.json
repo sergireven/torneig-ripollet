@@ -81,7 +81,7 @@
             {
               "id": "prebe-or-1",
               "time": "11:30",
-              "home": "CHR A",
+              "home": "CH Ripollet A",
               "homeKey": "chr",
               "away": "CH Sta Perpètua A",
               "awayKey": "ch-sta-perpetua",
@@ -102,9 +102,9 @@
             {
               "id": "prebe-plata-1",
               "time": "10:10",
-              "home": "CHR B",
+              "home": "CH Ripollet B",
               "homeKey": "chr",
-              "away": "CHR C",
+              "away": "CH Ripollet C",
               "awayKey": "chr",
               "homeScore": 0,
               "awayScore": 0,
@@ -123,7 +123,7 @@
             {
               "id": "prebe-iniciacio-1",
               "time": "09:30",
-              "home": "CHR D",
+              "home": "CH Ripollet D",
               "homeKey": "chr",
               "away": "PHC Sant Cugat G",
               "awayKey": "phc-sant-cugat",
@@ -151,7 +151,7 @@
             {
               "id": "prebe-iniciacio-3",
               "time": "12:10",
-              "home": "CHR D",
+              "home": "CH Ripollet D",
               "homeKey": "chr",
               "away": "HC Sentmenat",
               "awayKey": "hc-sentmenat",
@@ -179,7 +179,7 @@
             {
               "id": "benjami-or-1",
               "time": "16:10",
-              "home": "CHR A",
+              "home": "CH Ripollet A",
               "homeKey": "chr",
               "away": "PHC Sant Cugat B",
               "awayKey": "phc-sant-cugat",
@@ -207,7 +207,7 @@
             {
               "id": "benjami-or-3",
               "time": "18:50",
-              "home": "CHR A",
+              "home": "CH Ripollet A",
               "homeKey": "chr",
               "away": "HC Sant Just B",
               "awayKey": "hc-sant-just",
@@ -228,7 +228,7 @@
             {
               "id": "benjami-plata-1",
               "time": "15:30",
-              "home": "CHR B",
+              "home": "CH Ripollet B",
               "homeKey": "chr",
               "away": "HC Sentmenat",
               "awayKey": "hc-sentmenat",
@@ -256,7 +256,7 @@
             {
               "id": "benjami-plata-3",
               "time": "18:10",
-              "home": "CHR B",
+              "home": "CH Ripollet B",
               "homeKey": "chr",
               "away": "CH Sta Perpètua A",
               "awayKey": "ch-sta-perpetua",
