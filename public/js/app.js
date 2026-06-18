@@ -798,11 +798,13 @@ function buildInstagramSection() {
       </div>
       <div class="ig-wrap" id="ig-wrap-chr">
         ${igLoadingHTML()}
-        <blockquote class="instagram-media"
-          data-instgrm-permalink="${urlClub}"
-          data-instgrm-version="14"
-          style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
-        </blockquote>
+        <div class="ig-embed-holder" style="visibility:hidden">
+          <blockquote class="instagram-media"
+            data-instgrm-permalink="${urlClub}"
+            data-instgrm-version="14"
+            style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
+          </blockquote>
+        </div>
       </div>
     </div>
 
@@ -818,11 +820,13 @@ function buildInstagramSection() {
       </div>
       <div class="ig-wrap" id="ig-wrap-campus">
         ${igLoadingHTML()}
-        <blockquote class="instagram-media"
-          data-instgrm-permalink="${urlCampus}"
-          data-instgrm-version="14"
-          style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
-        </blockquote>
+        <div class="ig-embed-holder" style="visibility:hidden">
+          <blockquote class="instagram-media"
+            data-instgrm-permalink="${urlCampus}"
+            data-instgrm-version="14"
+            style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0 auto;max-width:540px;width:100%;">
+          </blockquote>
+        </div>
       </div>
     </div>
   `;
@@ -849,8 +853,12 @@ function setupIgLoading(wrapperId, fallbackUrl) {
   if (!wrap) return;
 
   const loading = wrap.querySelector('.ig-loading');
+  const holder  = wrap.querySelector('.ig-embed-holder');
 
-  function onLoaded() { loading?.remove(); }
+  function onLoaded() {
+    loading?.remove();
+    if (holder) holder.style.visibility = 'visible';
+  }
 
   function onFailed() {
     if (!loading) return;
