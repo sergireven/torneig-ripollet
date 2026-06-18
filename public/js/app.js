@@ -87,6 +87,8 @@ function buildSidebar() {
     },
     { type: 'direct', label: 'Resultats Temporada', icon: '📊', id: 'sec-temporada' },
     { type: 'separator' },
+    { type: 'direct', label: 'Patrocinadors', icon: '🤝', id: 'sec-sponsors' },
+    { type: 'separator' },
     { type: 'link', label: 'Administrador', icon: '🔧', href: 'admin.html' },
   ];
 
@@ -147,6 +149,7 @@ function buildBottomNav() {
         { icon: '🕐', label: 'Horaris',           id: 'sec-info', anchor: 'info-schedule' },
         { icon: '📍', label: 'Ubicació',          id: 'sec-info', anchor: 'info-location' },
         { icon: '🚪', label: 'Vestidors',         id: 'sec-info', anchor: 'info-vestidors' },
+        { icon: '🤝', label: 'Patrocinadors',     id: 'sec-sponsors' },
       ]
     },
     {
@@ -324,6 +327,9 @@ function buildContent() {
 
   // okCat360
   main.appendChild(buildOkCat360Section());
+
+  // Sponsors
+  if (DATA.sponsors?.length) main.appendChild(buildSponsorsSection());
 }
 
 function buildSectionById(id) {
@@ -331,6 +337,7 @@ function buildSectionById(id) {
   if (id === 'sec-info') return buildInfoSection();
   if (id === 'sec-campus') return buildInstagramSection();
   if (id === 'sec-temporada') return buildOkCat360Section();
+  if (id === 'sec-sponsors') return buildSponsorsSection();
 
   for (const cat of DATA.categories) {
     for (const div of cat.divisions) {
@@ -852,6 +859,32 @@ function setupIgPlaceholder(wrapperId) {
       if (placeholder) placeholder.classList.add('ig-placeholder-timeout');
     }
   }, 500);
+}
+
+/* ===================== SPONSORS SECTION ===================== */
+function buildSponsorsSection() {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.id = 'sec-sponsors';
+
+  const cards = DATA.sponsors.map(s => `
+    <div class="sponsor-card">
+      <img src="${s.logo}" alt="${s.name}" class="sponsor-logo">
+      <div class="sponsor-info">
+        <div class="sponsor-name">${s.name}</div>
+        ${s.tagline ? `<div class="sponsor-tagline">${s.tagline}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  sec.innerHTML = `
+    <div class="section-header">
+      <span class="section-icon">🤝</span>
+      <h2>Patrocinadors</h2>
+    </div>
+    <div class="sponsors-grid">${cards}</div>
+  `;
+  return sec;
 }
 
 /* ===================== OKCAT360 SECTION ===================== */

@@ -294,6 +294,13 @@
       ]
     }
   ],
+  "sponsors": [
+    {
+      "name": "Bar El Pabellón",
+      "logo": "assets/sponsors/bar-el-pabellon.png",
+      "tagline": "Tapas · Còcteles y Más"
+    }
+  ],
   "links": {
     "clubWeb": "https://www.clubhoqueiripollet.com/",
     "instagramClub": "https://www.instagram.com/ch_ripollet/",
