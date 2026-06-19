@@ -141,6 +141,7 @@ function buildBottomNav() {
   if (!nav || !sheet) return;
 
   const tabs = [
+    { icon: '🔴', label: 'En curs', id: 'sec-live' },
     {
       icon: '📋', label: 'Info', id: 'sec-info',
       children: [
@@ -372,6 +373,12 @@ function updateBar() {
 }
 
 /* ===================== LIVE WIDGET ===================== */
+function fmtTournamentDate() {
+  const d = new Date(DATA.tournament.date + 'T12:00:00');
+  const s = d.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function getLiveStatus() {
   const allMatches = [];
   DATA.categories.forEach(cat => {
@@ -424,7 +431,7 @@ function buildLiveSection() {
       <div class="live-widget live-done-widget">
         <span class="live-done-trophy">🏆</span>
         <span class="live-done-text">Torneig finalitzat</span>
-        <span class="live-done-sub">Gràcies a tots els participants!</span>
+        <span class="live-done-sub">${fmtTournamentDate()}</span>
       </div>`;
     return sec;
   }
@@ -442,7 +449,8 @@ function buildLiveSection() {
       </div>
     </div>`;
 
-  let html = '<div class="live-widget">';
+  let html = `<div class="live-widget">
+    <div class="live-date-bar">📅 ${fmtTournamentDate()}</div>`;
 
   if (current) {
     html += `
@@ -638,7 +646,8 @@ function buildScheduleHTML(info) {
 
   allMatches.sort((a, b) => a.time.localeCompare(b.time));
 
-  let html = '<div class="schedule-grid">';
+  let html = `<div class="schedule-date-label">📅 ${fmtTournamentDate()}</div>
+  <div class="schedule-grid">`;
   allMatches.forEach(m => {
     if (m.special) {
       html += `<div class="schedule-medals" style="grid-column:1/-1">${m.time} — ${m.special}</div>`;
