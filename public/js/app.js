@@ -141,15 +141,15 @@ function buildBottomNav() {
   if (!nav || !sheet) return;
 
   const tabs = [
-    { icon: '🔴', label: 'En curs', id: 'sec-live' },
     {
       icon: '📋', label: 'Info', id: 'sec-info',
       children: [
-        { icon: '👋', label: 'Benvinguda',  id: 'sec-info', anchor: 'info-welcome' },
-        { icon: '📜', label: 'Regles',      id: 'sec-info', anchor: 'info-rules' },
-        { icon: '🕐', label: 'Horaris',     id: 'sec-info', anchor: 'info-schedule' },
-        { icon: '📍', label: 'Ubicació',    id: 'sec-info', anchor: 'info-location' },
-        { icon: '🚪', label: 'Vestidors',   id: 'sec-info', anchor: 'info-vestidors' },
+        { icon: '🔴', label: 'Partit en curs', id: 'sec-live' },
+        { icon: '👋', label: 'Benvinguda',     id: 'sec-info', anchor: 'info-welcome' },
+        { icon: '📜', label: 'Regles',         id: 'sec-info', anchor: 'info-rules' },
+        { icon: '🕐', label: 'Horaris',        id: 'sec-info', anchor: 'info-schedule' },
+        { icon: '📍', label: 'Ubicació',       id: 'sec-info', anchor: 'info-location' },
+        { icon: '🚪', label: 'Vestidors',      id: 'sec-info', anchor: 'info-vestidors' },
       ]
     },
     {
