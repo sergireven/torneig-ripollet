@@ -725,14 +725,15 @@ function calculateStandings(division) {
       away.pts += 3; away.pg++;
       home.pp++;
     } else {
-      // Draw — check penalty (directa)
+      // Draw at full time — winner decided by directes
       if (m.penaltyWinner === 'home') {
-        home.pts += 2; home.pg++;   // wins the directa
-        away.pts += 1; away.pe++;   // loses directa (still 1pt)
+        home.pts += 3; home.pg++;
+        away.pp++;
       } else if (m.penaltyWinner === 'away') {
-        away.pts += 2; away.pg++;
-        home.pts += 1; home.pe++;
+        away.pts += 3; away.pg++;
+        home.pp++;
       } else {
+        // Should not happen in this tournament (no draws allowed)
         home.pts += 1; home.pe++;
         away.pts += 1; away.pe++;
       }
@@ -763,7 +764,6 @@ function buildStandingsHTML(standings) {
         </td>
         <td>${team.pj}</td>
         <td>${team.pg}</td>
-        <td>${team.pe}</td>
         <td>${team.pp}</td>
         <td>${team.gf}</td>
         <td>${team.gc}</td>
@@ -780,7 +780,6 @@ function buildStandingsHTML(standings) {
           <th>Equip</th>
           <th>PJ</th>
           <th>PG</th>
-          <th>PE</th>
           <th>PP</th>
           <th>GF</th>
           <th>GC</th>
@@ -791,7 +790,7 @@ function buildStandingsHTML(standings) {
       <tbody>${rows}</tbody>
     </table>
     <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px;padding-left:4px;">
-      PG = guanyats · PE = empat/directa perduda (1pt) · PP = perduts · GD = diferència de gols
+      PG = guanyats · PP = perduts · GD = diferència de gols · Empat al temps resolt per directes (3-0 pts)
     </p>
   `;
 }
