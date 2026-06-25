@@ -1591,3 +1591,118 @@ img { display: block; }
     gap: 8px;
   }
 }
+
+/* ===================== PARKING ===================== */
+.parking-intro {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.parking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.parking-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 16px 16px 16px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,20,80,0.06);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.parking-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,20,80,0.11);
+}
+
+.parking-card-accent {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: var(--accent);
+}
+
+.parking-card-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,196,0,0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,196,0,0.22);
+}
+
+.parking-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.parking-zona {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent-dark);
+  margin-bottom: 2px;
+}
+
+.parking-carrer {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parking-tipus {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.parking-nav-btn {
+  flex-shrink: 0;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 20px;
+  padding: 9px 15px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.parking-nav-btn:hover {
+  background: var(--primary-light);
+}
+
+.parking-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255,196,0,0.07);
+  border: 1px solid rgba(255,196,0,0.22);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

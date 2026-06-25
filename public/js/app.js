@@ -56,6 +56,7 @@ function buildSidebar() {
         { label: 'Horaris', id: 'sec-info', anchor: 'info-schedule' },
         { label: 'Ubicació i Contactes', id: 'sec-info', anchor: 'info-location' },
         { label: 'Vestidors', id: 'sec-info', anchor: 'info-vestidors' },
+        { label: 'Aparcament', id: 'sec-parking' },
       ]
     },
     { type: 'separator' },
@@ -150,6 +151,7 @@ function buildBottomNav() {
         { icon: '🕐', label: 'Horaris',        id: 'sec-info', anchor: 'info-schedule' },
         { icon: '📍', label: 'Ubicació',       id: 'sec-info', anchor: 'info-location' },
         { icon: '🚪', label: 'Vestidors',      id: 'sec-info', anchor: 'info-vestidors' },
+        { icon: '🅿️', label: 'Aparcament',    id: 'sec-parking' },
       ]
     },
     {
@@ -319,6 +321,9 @@ function buildContent() {
   // Info section
   main.appendChild(buildInfoSection());
 
+  // Parking
+  main.appendChild(buildParkingSection());
+
   // Categories
   DATA.categories.forEach(cat => {
     cat.divisions.forEach(div => {
@@ -340,6 +345,7 @@ function buildSectionById(id) {
   if (!DATA) return null;
   if (id === 'sec-live') return buildLiveSection();
   if (id === 'sec-info') return buildInfoSection();
+  if (id === 'sec-parking') return buildParkingSection();
   if (id === 'sec-campus') return buildInstagramSection();
   if (id === 'sec-temporada') return buildOkCat360Section();
   if (id === 'sec-sponsors') return buildSponsorsSection();
@@ -969,6 +975,57 @@ function buildInstagramSection() {
 }
 
 /* ===================== SPONSORS SECTION ===================== */
+/* ===================== PARKING SECTION ===================== */
+function buildParkingSection() {
+  const ZONES = [
+    {
+      zona: 'Zona 1',
+      carrer: 'Av. Maria Torrès',
+      tipus: 'Aparcament lliure · Gratuït',
+      url: 'https://maps.app.goo.gl/zRxqtJspT8uSgmfM7',
+    },
+    {
+      zona: 'Zona 2',
+      carrer: 'Rambla de les Vinyes',
+      tipus: 'Aparcament lliure · Gratuït',
+      url: 'https://maps.app.goo.gl/uCVtrSAFKkJrjvsr6',
+    },
+  ];
+
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.id = 'sec-parking';
+
+  sec.innerHTML = `
+    <div class="section-header">
+      <span class="section-icon">🅿️</span>
+      <h2>Aparcament</h2>
+    </div>
+    <p class="parking-intro">Zones d'aparcament properes al Pavelló Municipal Joan Creus</p>
+    <div class="parking-list">
+      ${ZONES.map(z => `
+        <div class="parking-card">
+          <div class="parking-card-accent"></div>
+          <div class="parking-card-icon">🅿️</div>
+          <div class="parking-card-body">
+            <div class="parking-zona">${z.zona}</div>
+            <div class="parking-carrer">${z.carrer}</div>
+            <div class="parking-tipus">${z.tipus}</div>
+          </div>
+          <a class="parking-nav-btn" href="${z.url}" target="_blank" rel="noopener">
+            📍 Navegar
+          </a>
+        </div>
+      `).join('')}
+    </div>
+    <div class="parking-note">
+      <span>💡</span>
+      Recomanem arribar amb antelació. L'aparcament pot ser limitat durant el torneig.
+    </div>
+  `;
+  return sec;
+}
+
 function buildSponsorsSection() {
   const sec = document.createElement('div');
   sec.className = 'section';
