@@ -174,6 +174,17 @@ export default async function handler(req, res) {
             m.played    = played !== undefined ? Boolean(played) : true;
 
             const isDraw = m.homeScore === m.awayScore;
+
+            // Reject if draw with equal penalty scores — empat not allowed in this tournament
+            if (isDraw && penaltyHomeScore !== null && penaltyHomeScore !== undefined &&
+                penaltyAwayScore !== null && penaltyAwayScore !== undefined) {
+              const ph = typeof penaltyHomeScore === 'number' ? penaltyHomeScore : parseInt(penaltyHomeScore, 10) || 0;
+              const pa = typeof penaltyAwayScore === 'number' ? penaltyAwayScore : parseInt(penaltyAwayScore, 10) || 0;
+              if (ph === pa) {
+                return res.status(400).json({ error: 'Les directes no poden acabar en empat. Introdueix un resultat amb guanyador.' });
+              }
+            }
+
             m.penaltyHomeScore = isDraw && penaltyHomeScore !== null && penaltyHomeScore !== undefined
               ? (typeof penaltyHomeScore === 'number' ? penaltyHomeScore : parseInt(penaltyHomeScore, 10) || 0)
               : null;

@@ -214,27 +214,25 @@ function renderScoreboard(match) {
     </div>
 
     <div id="sb-penalty-area" class="sb-penalty" style="display:${isDraw ? 'block' : 'none'}">
-      <div class="sb-penalty-label">⚡ Empat — Resultat directes</div>
+      <div class="sb-penalty-label">⚡ Empat al temps — Introdueix el resultat de les directes</div>
       <div class="form-row" style="margin-top:0.5rem">
         <div class="form-group">
           <label style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase">
             ${match.home}
           </label>
-          <input type="number" id="sb-pen-home" min="0" value="${match.penaltyHomeScore ?? 0}"
+          <input type="number" id="sb-pen-home" min="0" value="${match.penaltyHomeScore ?? ''}"
+            placeholder="—"
             style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%;font-family:inherit">
         </div>
         <div class="form-group">
           <label style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase">
             ${match.away}
           </label>
-          <input type="number" id="sb-pen-away" min="0" value="${match.penaltyAwayScore ?? 0}"
+          <input type="number" id="sb-pen-away" min="0" value="${match.penaltyAwayScore ?? ''}"
+            placeholder="—"
             style="text-align:center;font-size:1.4rem;font-weight:900;padding:0.5rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;width:100%;font-family:inherit">
         </div>
       </div>
-      <label class="checkbox-label" style="margin-top:0.6rem">
-        <input type="checkbox" id="sb-no-penalty" ${!match.penaltyWinner && isDraw && match.played ? 'checked' : ''}>
-        Sense directes (empat definitiu)
-      </label>
     </div>
 
     <div class="sb-footer">
@@ -271,10 +269,6 @@ function renderScoreboard(match) {
     sbPenaltyAway = +e.target.value;
     updateWinnerHighlight();
   });
-  document.getElementById('sb-no-penalty')?.addEventListener('change', e => {
-    if (e.target.checked) { sbPenaltyHome = null; sbPenaltyAway = null; }
-    updateWinnerHighlight();
-  });
   document.getElementById('sb-save-btn')?.addEventListener('click', sbSave);
   document.getElementById('sb-reset-btn')?.addEventListener('click', sbReset);
 
@@ -292,13 +286,10 @@ function sbStatusBadgeHtml(match) {
 function getWinner() {
   if (sbHome > sbAway) return 'home';
   if (sbAway > sbHome) return 'away';
-  // draw — check penalty
+  // draw — determine winner by directes
   if (sbPenaltyHome !== null && sbPenaltyAway !== null) {
-    const noPen = document.getElementById('sb-no-penalty')?.checked;
-    if (!noPen) {
-      if (sbPenaltyHome > sbPenaltyAway) return 'home';
-      if (sbPenaltyAway > sbPenaltyHome) return 'away';
-    }
+    if (sbPenaltyHome > sbPenaltyAway) return 'home';
+    if (sbPenaltyAway > sbPenaltyHome) return 'away';
   }
   return null;
 }
@@ -332,9 +323,23 @@ function updateSbPenaltyVisibility() {
 
 async function sbSave() {
   if (!sbMatchId) return;
-  const noPen = document.getElementById('sb-no-penalty')?.checked;
-  const penaltyHomeScore = (sbHome === sbAway && !noPen) ? (sbPenaltyHome ?? 0) : null;
-  const penaltyAwayScore = (sbHome === sbAway && !noPen) ? (sbPenaltyAway ?? 0) : null;
+  const isDraw = sbHome === sbAway;
+
+  if (isDraw) {
+    const ph = sbPenaltyHome ?? null;
+    const pa = sbPenaltyAway ?? null;
+    if (ph === null || pa === null || ph === '' || pa === '') {
+      showMsg('sb-msg', 'error', 'Cal introduir el resultat de les directes.');
+      return;
+    }
+    if (Number(ph) === Number(pa)) {
+      showMsg('sb-msg', 'error', 'Les directes no poden acabar en empat. Introdueix un resultat amb guanyador.');
+      return;
+    }
+  }
+
+  const penaltyHomeScore = isDraw ? (sbPenaltyHome ?? 0) : null;
+  const penaltyAwayScore = isDraw ? (sbPenaltyAway ?? 0) : null;
   await saveMatch({
     matchId: sbMatchId,
     homeScore: sbHome,
